@@ -1,0 +1,3028 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Smart Bin API Documentation",
+        "version": "1.0.0",
+        "description": "Smart Bin Backend API - Ecosystem aplikasi smart bin dengan sistem reward points yang dapat ditukar ke e-wallet."
+    },
+    "servers": [
+        {
+            "url": "http://localhost/api"
+        }
+    ],
+    "paths": {
+        "/health": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "enum": [
+                                                "ok"
+                                            ]
+                                        },
+                                        "timestamp": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "service": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Smart Bin API"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "status",
+                                        "timestamp",
+                                        "service"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/register": {
+            "post": {
+                "operationId": "auth.register",
+                "summary": "Register a new user",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "maxLength": 255
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "minLength": 8
+                                    },
+                                    "phone_number": {
+                                        "type": "string"
+                                    },
+                                    "pin": {
+                                        "type": "string",
+                                        "minLength": 4,
+                                        "maxLength": 6
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "minLength": 8
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "phone_number",
+                                    "pin",
+                                    "password_confirmation"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "User registered successfully"
+                                            ]
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "user": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "email": {
+                                                            "type": "string"
+                                                        },
+                                                        "phone_number": {
+                                                            "type": "string"
+                                                        },
+                                                        "total_points": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "name",
+                                                        "email",
+                                                        "phone_number",
+                                                        "total_points"
+                                                    ]
+                                                },
+                                                "token": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "user",
+                                                "token"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Validation error"
+                                            ]
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "errors"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/login": {
+            "post": {
+                "operationId": "auth.login",
+                "summary": "Login user",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "email",
+                                    "password"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Login successful"
+                                            ]
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "user": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "email": {
+                                                            "type": "string"
+                                                        },
+                                                        "phone_number": {
+                                                            "type": "string"
+                                                        },
+                                                        "total_points": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "name",
+                                                        "email",
+                                                        "phone_number",
+                                                        "total_points"
+                                                    ]
+                                                },
+                                                "token": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "user",
+                                                "token"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Invalid credentials"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Validation error"
+                                            ]
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "errors"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/forgot-password": {
+            "post": {
+                "operationId": "auth.forgotPassword",
+                "summary": "Request password reset (simplified - in production, send email)",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "required": [
+                                    "email"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "In production, send password reset email here\nFor now, return a success message",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Password reset instructions sent to your email"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Validation error"
+                                            ]
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "errors"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/reset-password": {
+            "post": {
+                "operationId": "auth.resetPassword",
+                "summary": "Reset password",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "minLength": 8
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "minLength": 8
+                                    }
+                                },
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Password reset successfully"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Validation error"
+                                            ]
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "errors"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/logout": {
+            "post": {
+                "operationId": "auth.logout",
+                "summary": "Logout user",
+                "tags": [
+                    "Auth"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Logged out successfully"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/redeem/options": {
+            "get": {
+                "operationId": "redeem.getEwalletOptions",
+                "summary": "Get available e-wallet options",
+                "tags": [
+                    "Redeem"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "options": {
+                                                    "type": "array",
+                                                    "prefixItems": [
+                                                        {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "gopay"
+                                                                    ]
+                                                                },
+                                                                "name": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "GoPay"
+                                                                    ]
+                                                                },
+                                                                "icon": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "gopay.png"
+                                                                    ]
+                                                                },
+                                                                "minimum_points": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "type",
+                                                                "name",
+                                                                "icon",
+                                                                "minimum_points"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "ovo"
+                                                                    ]
+                                                                },
+                                                                "name": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "OVO"
+                                                                    ]
+                                                                },
+                                                                "icon": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "ovo.png"
+                                                                    ]
+                                                                },
+                                                                "minimum_points": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "type",
+                                                                "name",
+                                                                "icon",
+                                                                "minimum_points"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "dana"
+                                                                    ]
+                                                                },
+                                                                "name": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "DANA"
+                                                                    ]
+                                                                },
+                                                                "icon": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "dana.png"
+                                                                    ]
+                                                                },
+                                                                "minimum_points": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "type",
+                                                                "name",
+                                                                "icon",
+                                                                "minimum_points"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "shopeepay"
+                                                                    ]
+                                                                },
+                                                                "name": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "ShopeePay"
+                                                                    ]
+                                                                },
+                                                                "icon": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "shopeepay.png"
+                                                                    ]
+                                                                },
+                                                                "minimum_points": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "type",
+                                                                "name",
+                                                                "icon",
+                                                                "minimum_points"
+                                                            ]
+                                                        }
+                                                    ],
+                                                    "minItems": 4,
+                                                    "maxItems": 4,
+                                                    "additionalItems": false
+                                                },
+                                                "conversion_rate": {
+                                                    "type": "string"
+                                                },
+                                                "minimum_points": {
+                                                    "type": "string"
+                                                },
+                                                "note": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "options",
+                                                "conversion_rate",
+                                                "minimum_points",
+                                                "note"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/redeem/packages": {
+            "get": {
+                "operationId": "redeem.getRedeemPackages",
+                "summary": "Get redeem packages/suggestions",
+                "tags": [
+                    "Redeem"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "packages": {
+                                                    "type": "array",
+                                                    "prefixItems": [
+                                                        {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "enum": [
+                                                                        1
+                                                                    ]
+                                                                },
+                                                                "points": {
+                                                                    "type": "integer",
+                                                                    "enum": [
+                                                                        100
+                                                                    ]
+                                                                },
+                                                                "amount": {
+                                                                    "type": "integer",
+                                                                    "enum": [
+                                                                        1000
+                                                                    ]
+                                                                },
+                                                                "formatted_amount": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "Rp 1.000"
+                                                                    ]
+                                                                },
+                                                                "available": {
+                                                                    "type": "boolean"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "id",
+                                                                "points",
+                                                                "amount",
+                                                                "formatted_amount",
+                                                                "available"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "enum": [
+                                                                        2
+                                                                    ]
+                                                                },
+                                                                "points": {
+                                                                    "type": "integer",
+                                                                    "enum": [
+                                                                        500
+                                                                    ]
+                                                                },
+                                                                "amount": {
+                                                                    "type": "integer",
+                                                                    "enum": [
+                                                                        5000
+                                                                    ]
+                                                                },
+                                                                "formatted_amount": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "Rp 5.000"
+                                                                    ]
+                                                                },
+                                                                "available": {
+                                                                    "type": "boolean"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "id",
+                                                                "points",
+                                                                "amount",
+                                                                "formatted_amount",
+                                                                "available"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "enum": [
+                                                                        3
+                                                                    ]
+                                                                },
+                                                                "points": {
+                                                                    "type": "integer",
+                                                                    "enum": [
+                                                                        1000
+                                                                    ]
+                                                                },
+                                                                "amount": {
+                                                                    "type": "integer",
+                                                                    "enum": [
+                                                                        10000
+                                                                    ]
+                                                                },
+                                                                "formatted_amount": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "Rp 10.000"
+                                                                    ]
+                                                                },
+                                                                "available": {
+                                                                    "type": "boolean"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "id",
+                                                                "points",
+                                                                "amount",
+                                                                "formatted_amount",
+                                                                "available"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "enum": [
+                                                                        4
+                                                                    ]
+                                                                },
+                                                                "points": {
+                                                                    "type": "integer",
+                                                                    "enum": [
+                                                                        5000
+                                                                    ]
+                                                                },
+                                                                "amount": {
+                                                                    "type": "integer",
+                                                                    "enum": [
+                                                                        50000
+                                                                    ]
+                                                                },
+                                                                "formatted_amount": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "Rp 50.000"
+                                                                    ]
+                                                                },
+                                                                "available": {
+                                                                    "type": "boolean"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "id",
+                                                                "points",
+                                                                "amount",
+                                                                "formatted_amount",
+                                                                "available"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "enum": [
+                                                                        5
+                                                                    ]
+                                                                },
+                                                                "points": {
+                                                                    "type": "integer",
+                                                                    "enum": [
+                                                                        10000
+                                                                    ]
+                                                                },
+                                                                "amount": {
+                                                                    "type": "integer",
+                                                                    "enum": [
+                                                                        100000
+                                                                    ]
+                                                                },
+                                                                "formatted_amount": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "Rp 100.000"
+                                                                    ]
+                                                                },
+                                                                "available": {
+                                                                    "type": "boolean"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "id",
+                                                                "points",
+                                                                "amount",
+                                                                "formatted_amount",
+                                                                "available"
+                                                            ]
+                                                        }
+                                                    ],
+                                                    "minItems": 5,
+                                                    "maxItems": 5,
+                                                    "additionalItems": false
+                                                },
+                                                "user_points": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "packages",
+                                                "user_points"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/redeem/calculate": {
+            "post": {
+                "operationId": "redeem.calculateRedeem",
+                "summary": "Calculate redeem amount",
+                "tags": [
+                    "Redeem"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "points": {
+                                        "type": "integer",
+                                        "minimum": 0
+                                    }
+                                },
+                                "required": [
+                                    "points"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "points": {
+                                                    "type": "string"
+                                                },
+                                                "amount": {
+                                                    "type": "string"
+                                                },
+                                                "conversion_rate": {
+                                                    "type": "string"
+                                                },
+                                                "formatted_amount": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "points",
+                                                "amount",
+                                                "conversion_rate",
+                                                "formatted_amount"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Insufficient points"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Validation error"
+                                            ]
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "errors"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/redeem": {
+            "post": {
+                "operationId": "redeem.redeem",
+                "summary": "Process redeem request",
+                "tags": [
+                    "Redeem"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "points": {
+                                        "type": "integer",
+                                        "minimum": 0
+                                    },
+                                    "ewallet_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "gopay",
+                                            "ovo",
+                                            "dana",
+                                            "shopeepay"
+                                        ]
+                                    },
+                                    "ewallet_account": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "points",
+                                    "ewallet_type",
+                                    "ewallet_account"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "500": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {
+                                                    "type": "boolean"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Failed to process redeem request"
+                                                    ]
+                                                },
+                                                "error": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "success",
+                                                "message",
+                                                "error"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {
+                                                    "type": "boolean"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Payment processing failed. Please try again."
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "success",
+                                                "message"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Redeem successful. Payment will be processed shortly."
+                                            ]
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "transaction": {
+                                                    "$ref": "#/components/schemas/Transaction"
+                                                },
+                                                "user": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "total_points": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "name",
+                                                        "total_points"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "transaction",
+                                                "user"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Validation error"
+                                            ]
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "errors"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/redeem/history": {
+            "get": {
+                "operationId": "redeem.redeemHistory",
+                "summary": "Get redeem history",
+                "tags": [
+                    "Redeem"
+                ],
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/smart-bins": {
+            "get": {
+                "operationId": "smartBin.index",
+                "summary": "Get all smart bins (with optional filtering)",
+                "tags": [
+                    "SmartBin"
+                ],
+                "parameters": [
+                    {
+                        "name": "radius",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/SmartBin"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/smart-bins/{id}": {
+            "get": {
+                "operationId": "smartBin.show",
+                "summary": "Get smart bin details",
+                "tags": [
+                    "SmartBin"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Smart bin not found"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/smart-bins/validate-pin": {
+            "post": {
+                "operationId": "smartBin.validateUserPin",
+                "summary": "Validate user PIN at Smart Bin",
+                "tags": [
+                    "SmartBin"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "pin": {
+                                        "type": "string"
+                                    },
+                                    "smart_bin_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "required": [
+                                    "pin",
+                                    "smart_bin_id"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "PIN validated successfully"
+                                            ]
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "user": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "total_points": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "name",
+                                                        "total_points"
+                                                    ]
+                                                },
+                                                "smart_bin": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "location": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "name",
+                                                        "location"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "user",
+                                                "smart_bin"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Invalid PIN"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Validation error"
+                                            ]
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "errors"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/smart-bins/{id}/heartbeat": {
+            "post": {
+                "operationId": "smartBin.heartbeat",
+                "summary": "Heartbeat endpoint for Smart Bin to stay online",
+                "tags": [
+                    "SmartBin"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Heartbeat received"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Smart bin not found"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/smart-bins/{id}/status": {
+            "put": {
+                "operationId": "smartBin.updateStatus",
+                "summary": "Update smart bin status (for IoT device)",
+                "tags": [
+                    "SmartBin"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "online",
+                                            "offline",
+                                            "full",
+                                            "maintenance"
+                                        ]
+                                    },
+                                    "capacity_percentage": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 100
+                                    }
+                                },
+                                "required": [
+                                    "status"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Smart bin status updated"
+                                            ]
+                                        },
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Smart bin not found"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Validation error"
+                                            ]
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "errors"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/transactions/deposit": {
+            "post": {
+                "operationId": "transaction.createDeposit",
+                "summary": "Create deposit transaction (called by Smart Bin)",
+                "tags": [
+                    "Transaction"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    },
+                                    "smart_bin_id": {
+                                        "type": "integer"
+                                    },
+                                    "bottles_count": {
+                                        "type": "integer",
+                                        "minimum": 1
+                                    },
+                                    "points_per_bottle": {
+                                        "type": "integer",
+                                        "minimum": 1
+                                    }
+                                },
+                                "required": [
+                                    "user_id",
+                                    "smart_bin_id",
+                                    "bottles_count"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "500": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Failed to create deposit transaction"
+                                            ]
+                                        },
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "error"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Deposit successful"
+                                            ]
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "transaction": {
+                                                    "$ref": "#/components/schemas/Transaction"
+                                                },
+                                                "user": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "total_points": {
+                                                            "type": "string"
+                                                        },
+                                                        "points_earned": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "name",
+                                                        "total_points",
+                                                        "points_earned"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "transaction",
+                                                "user"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Validation error"
+                                            ]
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "errors"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/transactions": {
+            "get": {
+                "operationId": "transaction.index",
+                "summary": "Get user's transaction history",
+                "tags": [
+                    "Transaction"
+                ],
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/transactions/points": {
+            "get": {
+                "operationId": "transaction.pointHistory",
+                "summary": "Get point transaction history (detailed log)",
+                "tags": [
+                    "Transaction"
+                ],
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/transactions/total-points": {
+            "get": {
+                "operationId": "transaction.getTotalPoints",
+                "summary": "Get user's total points",
+                "tags": [
+                    "Transaction"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "total_points": {
+                                                    "type": "integer"
+                                                },
+                                                "user_id": {
+                                                    "type": "integer"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "total_points",
+                                                "user_id",
+                                                "name"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/transactions/{id}": {
+            "get": {
+                "operationId": "transaction.show",
+                "summary": "Get transaction details",
+                "tags": [
+                    "Transaction"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "data": {
+                                            "anyOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/Transaction"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Transaction not found"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/user/profile": {
+            "get": {
+                "operationId": "user.profile",
+                "summary": "Get user profile",
+                "tags": [
+                    "User"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "email": {
+                                                    "type": "string"
+                                                },
+                                                "phone_number": {
+                                                    "type": "string"
+                                                },
+                                                "total_points": {
+                                                    "type": "integer"
+                                                },
+                                                "created_at": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "name",
+                                                "email",
+                                                "phone_number",
+                                                "total_points",
+                                                "created_at"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "user.updateProfile",
+                "summary": "Update user profile",
+                "tags": [
+                    "User"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "phone_number": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Profile updated successfully"
+                                            ]
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "email": {
+                                                    "type": "string"
+                                                },
+                                                "phone_number": {
+                                                    "type": "string"
+                                                },
+                                                "total_points": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "name",
+                                                "email",
+                                                "phone_number",
+                                                "total_points"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Validation error"
+                                            ]
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "errors"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/user/view-pin": {
+            "post": {
+                "operationId": "user.viewPin",
+                "summary": "View PIN (for user reference)",
+                "tags": [
+                    "User"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "password"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "PIN retrieved successfully"
+                                            ]
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "info": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Your PIN is hashed and cannot be displayed. Please remember your PIN or reset it."
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "info"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Validation error"
+                                            ]
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "errors"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/user/change-pin": {
+            "put": {
+                "operationId": "user.changePin",
+                "summary": "Change PIN",
+                "tags": [
+                    "User"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "current_pin": {
+                                        "type": "string"
+                                    },
+                                    "new_pin": {
+                                        "type": "string",
+                                        "minLength": 4,
+                                        "maxLength": 6
+                                    }
+                                },
+                                "required": [
+                                    "current_pin",
+                                    "new_pin"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "PIN changed successfully"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Validation error"
+                                            ]
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "errors"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/user/change-password": {
+            "put": {
+                "operationId": "user.changePassword",
+                "summary": "Change password",
+                "tags": [
+                    "User"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "current_password": {
+                                        "type": "string"
+                                    },
+                                    "new_password": {
+                                        "type": "string",
+                                        "minLength": 8
+                                    },
+                                    "new_password_confirmation": {
+                                        "type": "string",
+                                        "minLength": 8
+                                    }
+                                },
+                                "required": [
+                                    "current_password",
+                                    "new_password",
+                                    "new_password_confirmation"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Password changed successfully"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Validation error"
+                                            ]
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "errors"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/user/validate-pin": {
+            "post": {
+                "operationId": "user.validatePin",
+                "summary": "Validate PIN (for Smart Bin authentication)",
+                "tags": [
+                    "User"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "pin": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "pin"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "PIN validated successfully"
+                                            ]
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "user": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "total_points": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "name",
+                                                        "total_points"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "user"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Validation error"
+                                            ]
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "errors"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "SmartBin": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "bin_code": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "location": {
+                        "type": "string"
+                    },
+                    "latitude": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "longitude": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "capacity_percentage": {
+                        "type": "integer"
+                    },
+                    "total_bottles_collected": {
+                        "type": "integer"
+                    },
+                    "last_online_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "bin_code",
+                    "name",
+                    "location",
+                    "latitude",
+                    "longitude",
+                    "status",
+                    "capacity_percentage",
+                    "total_bottles_collected",
+                    "last_online_at",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "SmartBin"
+            },
+            "Transaction": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "user_id": {
+                        "type": "integer"
+                    },
+                    "smart_bin_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "points": {
+                        "type": "integer"
+                    },
+                    "bottles_count": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "ewallet_type": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "ewallet_account": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "ewallet_amount": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "notes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "user_id",
+                    "smart_bin_id",
+                    "type",
+                    "points",
+                    "bottles_count",
+                    "ewallet_type",
+                    "ewallet_account",
+                    "ewallet_amount",
+                    "status",
+                    "notes",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "Transaction"
+            }
+        },
+        "responses": {
+            "AuthenticationException": {
+                "description": "Unauthenticated",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Error overview."
+                                }
+                            },
+                            "required": [
+                                "message"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
