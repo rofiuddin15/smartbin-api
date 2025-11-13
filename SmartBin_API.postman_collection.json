@@ -1,0 +1,409 @@
+{
+  "info": {
+    "name": "Smart Bin API",
+    "description": "API Collection for Smart Bin Ecosystem",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New User\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\",\n  \"phone_number\": \"081234567892\",\n  \"pin\": \"9999\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Profile",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/profile",
+              "host": ["{{base_url}}"],
+              "path": ["user", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\",\n  \"phone_number\": \"081234567893\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/user/profile",
+              "host": ["{{base_url}}"],
+              "path": ["user", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Change PIN",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_pin\": \"1234\",\n  \"new_pin\": \"5678\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/user/change-pin",
+              "host": ["{{base_url}}"],
+              "path": ["user", "change-pin"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Smart Bins",
+      "item": [
+        {
+          "name": "Get All Smart Bins",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/smart-bins",
+              "host": ["{{base_url}}"],
+              "path": ["smart-bins"]
+            }
+          }
+        },
+        {
+          "name": "Get Smart Bin by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/smart-bins/1",
+              "host": ["{{base_url}}"],
+              "path": ["smart-bins", "1"]
+            }
+          }
+        },
+        {
+          "name": "Validate PIN at Bin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pin\": \"1234\",\n  \"smart_bin_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/smart-bins/validate-pin",
+              "host": ["{{base_url}}"],
+              "path": ["smart-bins", "validate-pin"]
+            }
+          }
+        },
+        {
+          "name": "Update Bin Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"online\",\n  \"capacity_percentage\": 35\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/smart-bins/1/status",
+              "host": ["{{base_url}}"],
+              "path": ["smart-bins", "1", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "Create Deposit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 1,\n  \"smart_bin_id\": 1,\n  \"bottles_count\": 5,\n  \"points_per_bottle\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/transactions/deposit",
+              "host": ["{{base_url}}"],
+              "path": ["transactions", "deposit"]
+            }
+          }
+        },
+        {
+          "name": "Get Transaction History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/transactions",
+              "host": ["{{base_url}}"],
+              "path": ["transactions"]
+            }
+          }
+        },
+        {
+          "name": "Get Point History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/transactions/points",
+              "host": ["{{base_url}}"],
+              "path": ["transactions", "points"]
+            }
+          }
+        },
+        {
+          "name": "Get Total Points",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/transactions/total-points",
+              "host": ["{{base_url}}"],
+              "path": ["transactions", "total-points"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Redeem",
+      "item": [
+        {
+          "name": "Get E-Wallet Options",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/redeem/options",
+              "host": ["{{base_url}}"],
+              "path": ["redeem", "options"]
+            }
+          }
+        },
+        {
+          "name": "Get Redeem Packages",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/redeem/packages",
+              "host": ["{{base_url}}"],
+              "path": ["redeem", "packages"]
+            }
+          }
+        },
+        {
+          "name": "Calculate Redeem",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"points\": 500\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/redeem/calculate",
+              "host": ["{{base_url}}"],
+              "path": ["redeem", "calculate"]
+            }
+          }
+        },
+        {
+          "name": "Redeem Points",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"points\": 100,\n  \"ewallet_type\": \"gopay\",\n  \"ewallet_account\": \"081234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/redeem",
+              "host": ["{{base_url}}"],
+              "path": ["redeem"]
+            }
+          }
+        },
+        {
+          "name": "Get Redeem History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/redeem/history",
+              "host": ["{{base_url}}"],
+              "path": ["redeem", "history"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000/api/v1"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}
