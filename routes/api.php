@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\SmartBinController;
 use App\Http\Controllers\Api\RedeemController;
+use App\Http\Controllers\Api\RoleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,6 +80,21 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::post('/calculate', [RedeemController::class, 'calculateRedeem']);
         Route::post('/', [RedeemController::class, 'redeem']);
         Route::get('/history', [RedeemController::class, 'redeemHistory']);
+    });
+
+    // Role management routes (admin only)
+    Route::prefix('roles')->middleware('role:admin')->group(function () {
+        Route::get('/', [RoleController::class, 'index']);
+        Route::get('/permissions', [RoleController::class, 'getPermissions']);
+        Route::get('/{id}', [RoleController::class, 'show']);
+        Route::post('/', [RoleController::class, 'store']);
+        Route::put('/{id}', [RoleController::class, 'update']);
+        Route::delete('/{id}', [RoleController::class, 'destroy']);
+
+        // User role assignment
+        Route::post('/assign', [RoleController::class, 'assignRoleToUser']);
+        Route::post('/remove', [RoleController::class, 'removeRoleFromUser']);
+        Route::post('/sync', [RoleController::class, 'syncUserRoles']);
     });
 });
 
