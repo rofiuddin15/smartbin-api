@@ -25,6 +25,8 @@ class UserController extends Controller
                 'email' => $user->email,
                 'phone_number' => $user->phone_number,
                 'total_points' => $user->total_points,
+                'roles' => $user->getRoleNames(),
+                'permissions' => $user->getAllPermissions()->pluck('name'),
                 'created_at' => $user->created_at,
             ]
         ], 200);

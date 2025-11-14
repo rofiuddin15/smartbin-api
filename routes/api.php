@@ -31,6 +31,8 @@ Route::prefix('v1')->group(function () {
     });
 
     // Smart Bin public routes
+    // Note: For role-based access, you can protect routes like this:
+    // Route::post('/', [SmartBinController::class, 'store'])->middleware('role:admin|operator');
     Route::prefix('smart-bins')->group(function () {
         Route::get('/', [SmartBinController::class, 'index']);
         Route::get('/{id}', [SmartBinController::class, 'show']);

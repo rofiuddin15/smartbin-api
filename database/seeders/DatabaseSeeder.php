@@ -16,8 +16,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Seed roles and permissions first
+        $this->call([
+            RoleSeeder::class,
+        ]);
+
         // Create test users
-        User::create([
+        $testUser = User::create([
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => Hash::make('password'),
@@ -25,8 +30,9 @@ class DatabaseSeeder extends Seeder
             'pin' => Hash::make('1234'),
             'total_points' => 500,
         ]);
+        $testUser->assignRole('user');
 
-        User::create([
+        $johnUser = User::create([
             'name' => 'John Doe',
             'email' => 'john@example.com',
             'password' => Hash::make('password'),
@@ -34,6 +40,18 @@ class DatabaseSeeder extends Seeder
             'pin' => Hash::make('5678'),
             'total_points' => 1200,
         ]);
+        $johnUser->assignRole('user');
+
+        // Create admin user
+        $adminUser = User::create([
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('password'),
+            'phone_number' => '081234567892',
+            'pin' => Hash::make('0000'),
+            'total_points' => 0,
+        ]);
+        $adminUser->assignRole('admin');
 
         // Call SmartBin seeder
         $this->call([

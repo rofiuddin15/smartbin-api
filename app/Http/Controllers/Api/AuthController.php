@@ -13,6 +13,7 @@ class AuthController extends Controller
 {
     /**
      * Register a new user
+     * Automatically assigns 'user' role using Spatie Laravel Permission
      */
     public function register(Request $request)
     {
@@ -41,6 +42,9 @@ class AuthController extends Controller
             'total_points' => 0,
         ]);
 
+        // Assign 'user' role to new registrations
+        $user->assignRole('user');
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -53,6 +57,7 @@ class AuthController extends Controller
                     'email' => $user->email,
                     'phone_number' => $user->phone_number,
                     'total_points' => $user->total_points,
+                    'roles' => $user->getRoleNames(),
                 ],
                 'token' => $token,
             ]
@@ -61,6 +66,7 @@ class AuthController extends Controller
 
     /**
      * Login user
+     * Returns user data including roles and permissions
      */
     public function login(Request $request)
     {
@@ -98,6 +104,8 @@ class AuthController extends Controller
                     'email' => $user->email,
                     'phone_number' => $user->phone_number,
                     'total_points' => $user->total_points,
+                    'roles' => $user->getRoleNames(),
+                    'permissions' => $user->getAllPermissions()->pluck('name'),
                 ],
                 'token' => $token,
             ]
