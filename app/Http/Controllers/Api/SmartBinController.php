@@ -64,6 +64,45 @@ class SmartBinController extends Controller
     }
 
     /**
+     * Register a new smart bin device
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'bin_code' => 'required|string|unique:smart_bins,bin_code',
+            'name' => 'required|string|max:255',
+            'location' => 'required|string|max:255',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $smartBin = SmartBin::create([
+            'bin_code' => $request->bin_code,
+            'name' => $request->name,
+            'location' => $request->location,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'status' => 'offline',
+            'capacity_percentage' => 0,
+            'total_bottles_collected' => 0,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Smart bin registered successfully',
+            'data' => $smartBin
+        ], 201);
+    }
+
+    /**
      * Get smart bin details
      */
     public function show($id)

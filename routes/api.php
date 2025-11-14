@@ -34,6 +34,7 @@ Route::prefix('v1')->group(function () {
     Route::prefix('smart-bins')->group(function () {
         Route::get('/', [SmartBinController::class, 'index']);
         Route::get('/{id}', [SmartBinController::class, 'show']);
+        Route::post('/', [SmartBinController::class, 'store']);
 
         // For Smart Bin device authentication
         Route::post('/validate-pin', [SmartBinController::class, 'validateUserPin']);
