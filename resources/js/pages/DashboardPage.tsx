@@ -31,7 +31,7 @@ function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
-const InfoBox = ({ color, icon: Icon, title, value, linkText }: { color: string, icon: any, title: string, value: string, linkText: string }) => (
+const InfoBox = ({ color, icon: Icon, title, value, linkText }: { color: string, icon: any, title: string, value: string | number, linkText: string }) => (
     <div className={`overflow-hidden rounded shadow-sm flex flex-col relative h-full border border-black/5`}>
         <div className={`p-4 flex justify-between items-start ${color} text-white flex-1`}>
             <div>
