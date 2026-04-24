@@ -10,9 +10,11 @@ import {
     ChevronUp, ChevronDown, CheckCircle, ShieldAlert,
     ShieldCheck, Settings, Users
 } from 'lucide-react';
-import api from '../utils/api';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '../store/store';
+import { fetchRoles, fetchPermissions, invalidateRolesCache } from '../store/slices/rolesSlice';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -32,9 +34,9 @@ interface Role {
 }
 
 const RoleManagementPage: React.FC = () => {
-    const [roles, setRoles] = useState<Role[]>([]);
-    const [permissions, setPermissions] = useState<Permission[]>([]);
-    const [loading, setLoading] = useState(true);
+    const dispatch = useDispatch<AppDispatch>();
+    const { roles, permissions, loading, error } = useSelector((state: RootState) => state.roles);
+    
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingRole, setEditingRole] = useState<Role | null>(null);
     
@@ -44,29 +46,13 @@ const RoleManagementPage: React.FC = () => {
     });
 
     useEffect(() => {
-        fetchRoles();
-        fetchPermissions();
-    }, []);
+        dispatch(fetchRoles());
+        dispatch(fetchPermissions());
+    }, [dispatch]);
 
-    const fetchRoles = async () => {
-        try {
-            setLoading(true);
-            const response = await api.get('/roles');
-            setRoles(response.data.data);
-        } catch (error) {
-            console.error('Error fetching roles:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchPermissions = async () => {
-        try {
-            const response = await api.get('/roles/permissions');
-            setPermissions(response.data.data);
-        } catch (error) {
-            console.error('Error fetching permissions:', error);
-        }
+    const fetchRolesData = () => {
+        dispatch(invalidateRolesCache());
+        dispatch(fetchRoles());
     };
 
     const handleOpenModal = (role: Role | null = null) => {
@@ -86,13 +72,14 @@ const RoleManagementPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            const api = (await import('../utils/api')).default;
             if (editingRole) {
                 await api.put(`/roles/${editingRole.id}`, formData);
             } else {
                 await api.post('/roles', formData);
             }
             setIsModalOpen(false);
-            fetchRoles();
+            fetchRolesData();
         } catch (error) {
             console.error('Error saving role:', error);
             alert('Gagal menyimpan Role. Pastikan nama Role belum digunakan.');
@@ -102,8 +89,9 @@ const RoleManagementPage: React.FC = () => {
     const handleDeleteRole = async (id: number) => {
         if (!confirm('Apakah Anda yakin ingin menghapus Role ini? Hal ini dapat mempengaruhi akses staff.')) return;
         try {
+            const api = (await import('../utils/api')).default;
             await api.delete(`/roles/${id}`);
-            fetchRoles();
+            fetchRolesData();
         } catch (error) {
             console.error('Error deleting role:', error);
             alert('Tidak dapat menghapus Role sistem yang dilindungi.');

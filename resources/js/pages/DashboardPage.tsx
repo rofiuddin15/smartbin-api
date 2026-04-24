@@ -20,7 +20,16 @@ import {
     Bar,
     Legend
 } from 'recharts';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '../store/store';
+import { fetchDashboardStats } from '../store/slices/dashboardSlice';
 import api from '../utils/api';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs));
+}
 
 const InfoBox = ({ color, icon: Icon, title, value, linkText }: { color: string, icon: any, title: string, value: string, linkText: string }) => (
     <div className={`overflow-hidden rounded shadow-sm flex flex-col relative h-full border border-black/5`}>
@@ -38,44 +47,28 @@ const InfoBox = ({ color, icon: Icon, title, value, linkText }: { color: string,
 );
 
 const DashboardPage: React.FC = () => {
-    const [stats, setStats] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
+    const dispatch = useDispatch<AppDispatch>();
+    const { stats, loading, error } = useSelector((state: RootState) => state.dashboard);
 
     useEffect(() => {
-        fetchDashboardData();
-    }, []);
+        dispatch(fetchDashboardStats());
+    }, [dispatch]);
 
-    const fetchDashboardData = async () => {
-        try {
-            setLoading(true);
-            const response = await api.get('/dashboard/stats');
-            setStats(response.data.data);
-        } catch (error) {
-            console.error('Error fetching dashboard data:', error);
-            setStats({
-                stats: {
-                    trash_collected: "1.250",
-                    active_bins: 42,
-                    new_users: 156,
-                    total_participants: "2.400"
-                },
-                chart_data: [
-                    { name: 'Jan', botol: 4000 },
-                    { name: 'Feb', botol: 3000 },
-                    { name: 'Mar', botol: 2000 },
-                    { name: 'Apr', botol: 2780 },
-                    { name: 'Mei', botol: 1890 },
-                    { name: 'Jun', botol: 2390 },
-                    { name: 'Jul', botol: 3490 },
-                ],
-                recent_transactions: []
-            });
-        } finally {
-            setLoading(false);
-        }
+    const fetchDashboardData = () => {
+        dispatch(fetchDashboardStats());
     };
 
-    if (loading && !stats) {
+    if (!stats) {
+        if (error) {
+            return (
+                <div className="bg-red-50 border border-red-100 p-12 rounded text-center">
+                    <Activity className="mx-auto text-red-400 mb-4" size={48} />
+                    <h3 className="text-sm font-black text-red-800 uppercase">Gagal Memuat Data</h3>
+                    <p className="text-xs text-red-600 mt-2">{error}</p>
+                    <button onClick={fetchDashboardData} className="mt-6 px-8 py-2 bg-red-600 text-white rounded text-[10px] font-black uppercase tracking-widest shadow-lg shadow-red-900/20">Coba Lagi</button>
+                </div>
+            );
+        }
         return (
             <div className="flex flex-col items-center justify-center h-64 text-gray-400 gap-3">
                 <Activity className="animate-spin" size={32} />

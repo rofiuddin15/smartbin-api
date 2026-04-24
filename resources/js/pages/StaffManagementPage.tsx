@@ -12,9 +12,12 @@ import {
     BadgeCheck, Search, Filter, X, Save, Ban, CheckCircle, 
     ChevronUp, ChevronDown, Activity, ShieldCheck, Lock
 } from 'lucide-react';
-import api from '../utils/api';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '../store/store';
+import { fetchStaff, invalidateStaffCache } from '../store/slices/staffSlice';
+import { fetchRoles } from '../store/slices/rolesSlice';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -35,9 +38,10 @@ interface Staff {
 }
 
 const StaffManagementPage: React.FC = () => {
-    const [staffList, setStaffList] = useState<Staff[]>([]);
-    const [roles, setRoles] = useState<Role[]>([]);
-    const [loading, setLoading] = useState(true);
+    const dispatch = useDispatch<AppDispatch>();
+    const { staffList, loading, error } = useSelector((state: RootState) => state.staff);
+    const { roles } = useSelector((state: RootState) => state.roles);
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -51,38 +55,13 @@ const StaffManagementPage: React.FC = () => {
     });
 
     useEffect(() => {
-        fetchStaff();
-        fetchRoles();
-    }, []);
+        dispatch(fetchStaff());
+        dispatch(fetchRoles());
+    }, [dispatch]);
 
-    const fetchStaff = async () => {
-        try {
-            setLoading(true);
-            const response = await api.get('/users');
-            const data = response.data.data.data || response.data.data;
-            
-            setStaffList(data.map((u: any) => ({
-                id: u.id,
-                name: u.name,
-                email: u.email,
-                roles: u.roles || [],
-                status: u.status || 'active',
-                created_at: u.created_at
-            })));
-        } catch (error) {
-            console.error('Error fetching staff:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchRoles = async () => {
-        try {
-            const response = await api.get('/roles');
-            setRoles(response.data.data);
-        } catch (error) {
-            console.error('Error fetching roles:', error);
-        }
+    const fetchStaffData = () => {
+        dispatch(invalidateStaffCache());
+        dispatch(fetchStaff());
     };
 
     const handleOpenModal = (staff: Staff | null = null) => {
@@ -104,6 +83,7 @@ const StaffManagementPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            const api = (await import('../utils/api')).default;
             if (editingStaff) {
                 await api.put(`/users/${editingStaff.id}`, {
                     name: formData.name,
@@ -123,7 +103,7 @@ const StaffManagementPage: React.FC = () => {
                 });
             }
             setIsModalOpen(false);
-            fetchStaff();
+            fetchStaffData();
         } catch (error) {
             console.error('Error saving staff:', error);
             alert('Gagal menyimpan data staff');
@@ -139,8 +119,9 @@ const StaffManagementPage: React.FC = () => {
         if (!confirm(confirmMsg)) return;
         
         try {
+            const api = (await import('../utils/api')).default;
             await api.put(`/admin/users/${staff.id}/status`, { status: newStatus });
-            fetchStaff();
+            fetchStaffData();
         } catch (error) {
             console.error('Error updating status:', error);
         }

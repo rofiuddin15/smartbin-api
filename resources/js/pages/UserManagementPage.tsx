@@ -14,9 +14,11 @@ import {
     Calendar, MapPin, Briefcase, CreditCard, Activity,
     ChevronUp, ChevronDown, X
 } from 'lucide-react';
-import api from '../utils/api';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '../store/store';
+import { fetchUsers, updateUserStatusInStore } from '../store/slices/usersSlice';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -42,8 +44,9 @@ interface User {
 }
 
 const UserManagementPage: React.FC = () => {
-    const [users, setUsers] = useState<User[]>([]);
-    const [loading, setLoading] = useState(true);
+    const dispatch = useDispatch<AppDispatch>();
+    const { users, loading, stats, error } = useSelector((state: RootState) => state.users);
+
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState<'pending' | 'active' | 'suspended'>('pending');
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -51,44 +54,18 @@ const UserManagementPage: React.FC = () => {
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
     const [rejectionReason, setRejectionReason] = useState('');
     const [sorting, setSorting] = useState<SortingState>([]);
-    const [stats, setStats] = useState({ pending: 0, active: 0, suspended: 0 });
 
     useEffect(() => {
-        fetchUsers();
-    }, [activeTab]);
+        dispatch(fetchUsers({ status: activeTab, search: searchTerm }));
+    }, [activeTab, dispatch]);
 
-    const fetchUsers = async () => {
-        try {
-            setLoading(true);
-            const response = await api.get('/admin/users', {
-                params: { 
-                    status: activeTab,
-                    search: searchTerm
-                }
-            });
-            const userData = response.data.data.data || response.data.data;
-            const enhancedData = (Array.isArray(userData) ? userData : []).map(u => ({
-                ...u,
-                address: u.address || 'Alamat belum diatur',
-                gender: u.gender || (u.id % 2 === 0 ? 'Laki-laki' : 'Perempuan'),
-                dob: u.dob || '1995-05-20',
-                occupation: u.occupation || 'Wiraswasta',
-                id_number: u.id_number || '352801' + Math.floor(Math.random() * 1000000000),
-                last_login_at: new Date().toISOString()
-            }));
-            setUsers(enhancedData);
-            if (activeTab === 'pending') setStats(prev => ({ ...prev, pending: enhancedData.length }));
-            if (activeTab === 'active') setStats(prev => ({ ...prev, active: enhancedData.length }));
-            if (activeTab === 'suspended') setStats(prev => ({ ...prev, suspended: enhancedData.length }));
-        } catch (error) {
-            console.error('Error fetching users:', error);
-        } finally {
-            setLoading(false);
-        }
+    const fetchUsersData = () => {
+        dispatch(fetchUsers({ status: activeTab, search: searchTerm }));
     };
 
     const handleUpdateStatus = async (userId: number, newStatus: string, reason: string | null = null) => {
         try {
+            const api = (await import('../utils/api')).default;
             await api.put(`/admin/users/${userId}/status`, {
                 status: newStatus,
                 rejection_reason: reason
@@ -96,7 +73,8 @@ const UserManagementPage: React.FC = () => {
             setIsRejectModalOpen(false);
             setIsProfileModalOpen(false);
             setRejectionReason('');
-            fetchUsers();
+            dispatch(updateUserStatusInStore({ userId, status: newStatus as any }));
+            dispatch(fetchUsers({ status: activeTab, search: searchTerm }));
         } catch (error) {
             console.error('Error updating user status:', error);
         }
@@ -183,7 +161,7 @@ const UserManagementPage: React.FC = () => {
                         className="pl-9 pr-4 py-1.5 text-xs border border-gray-200 rounded outline-none focus:border-admin-primary w-56 bg-white shadow-sm"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && fetchUsers()}
+                        onKeyDown={(e) => e.key === 'Enter' && fetchUsersData()}
                     />
                 </div>
             </div>

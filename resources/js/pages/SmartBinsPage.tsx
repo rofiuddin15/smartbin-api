@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Trash2, MapPin, Signal, Battery, AlertTriangle, Search, Plus, Users, LayoutGrid, Map as MapIcon, X, User, ShieldAlert, Lock, Save } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '../store/store';
+import { fetchBins, addBin, updateBin, deleteBin as deleteBinFromStore } from '../store/slices/smartBinsSlice';
 import api from '../utils/api';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -32,8 +35,9 @@ interface SmartBin {
 }
 
 const SmartBinsPage: React.FC = () => {
-    const [bins, setBins] = useState<SmartBin[]>([]);
-    const [loading, setLoading] = useState(true);
+    const dispatch = useDispatch<AppDispatch>();
+    const { bins, loading, error } = useSelector((state: RootState) => state.smartBins);
+    
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingBin, setEditingBin] = useState<SmartBin | null>(null);
     const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
@@ -57,8 +61,8 @@ const SmartBinsPage: React.FC = () => {
     const pickerMarker = useRef<mapboxgl.Marker | null>(null);
 
     useEffect(() => {
-        fetchBins();
-    }, []);
+        dispatch(fetchBins());
+    }, [dispatch]);
 
     useEffect(() => {
         if (viewMode === 'map' && bins.length > 0 && !loading) {
@@ -190,16 +194,8 @@ const SmartBinsPage: React.FC = () => {
         }
     };
 
-    const fetchBins = async () => {
-        try {
-            setLoading(true);
-            const response = await api.get('/smart-bins');
-            setBins(response.data.data);
-        } catch (error) {
-            console.error('Error fetching bins:', error);
-        } finally {
-            setLoading(false);
-        }
+    const fetchBinsData = () => {
+        dispatch(fetchBins());
     };
 
     const handleOpenModal = (bin: SmartBin | null = null) => {
@@ -235,12 +231,13 @@ const SmartBinsPage: React.FC = () => {
         e.preventDefault();
         try {
             if (editingBin) {
-                await api.put(`/smart-bins/${editingBin.id}`, formData);
+                const response = await api.put(`/smart-bins/${editingBin.id}`, formData);
+                dispatch(updateBin(response.data.data));
             } else {
-                await api.post('/smart-bins', formData);
+                const response = await api.post('/smart-bins', formData);
+                dispatch(addBin(response.data.data));
             }
             setIsModalOpen(false);
-            fetchBins();
         } catch (error) {
             console.error('Error saving bin:', error);
             alert('Gagal menyimpan SmartBin. Silakan periksa data kembali.');
@@ -251,7 +248,7 @@ const SmartBinsPage: React.FC = () => {
         if (!confirm('Apakah Anda yakin ingin menghapus SmartBin ini?')) return;
         try {
             await api.delete(`/smart-bins/${id}`);
-            fetchBins();
+            dispatch(deleteBinFromStore(id));
         } catch (error) {
             console.error('Error deleting bin:', error);
         }
@@ -317,10 +314,16 @@ const SmartBinsPage: React.FC = () => {
                 </div>
             </div>
 
-            {loading ? (
+            {loading && bins.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-3">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-admin-primary"></div>
                     <span className="text-[10px] font-black uppercase tracking-widest">Memuat Perangkat...</span>
+                </div>
+            ) : error ? (
+                <div className="bg-red-50 border border-red-100 p-8 rounded text-center">
+                    <AlertTriangle className="mx-auto text-red-500 mb-2" />
+                    <p className="text-xs font-bold text-red-700 uppercase">{error}</p>
+                    <button onClick={fetchBinsData} className="mt-4 px-6 py-2 bg-red-600 text-white rounded text-[10px] font-black uppercase">Coba Lagi</button>
                 </div>
             ) : (
                 <>

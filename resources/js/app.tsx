@@ -2,6 +2,8 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import './bootstrap';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from './store/store';
 import MainLayout from './layouts/MainLayout';
 import DashboardPage from './pages/DashboardPage';
 import UserManagementPage from './pages/UserManagementPage';
@@ -36,21 +38,23 @@ const LoginPage = () => (
 
 const App: React.FC = () => {
     return (
-        <Router>
-            <Routes>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/" element={<MainLayout />}>
-                    <Route index element={<DashboardPage />} />
-                    <Route path="users" element={<UserManagementPage />} />
-                    <Route path="smart-bins" element={<SmartBinsPage />} />
-                    <Route path="points" element={<PointRedemptionPage />} />
-                    <Route path="staff" element={<StaffManagementPage />} />
-                    <Route path="roles" element={<RoleManagementPage />} />
-                    <Route path="finance" element={<FinancePage />} />
-                </Route>
-                <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-        </Router>
+        <Provider store={store}>
+            <Router>
+                <Routes>
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/" element={<MainLayout />}>
+                        <Route index element={<DashboardPage />} />
+                        <Route path="users" element={<UserManagementPage />} />
+                        <Route path="smart-bins" element={<SmartBinsPage />} />
+                        <Route path="points" element={<PointRedemptionPage />} />
+                        <Route path="staff" element={<StaffManagementPage />} />
+                        <Route path="roles" element={<RoleManagementPage />} />
+                        <Route path="finance" element={<FinancePage />} />
+                    </Route>
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+            </Router>
+        </Provider>
     );
 };
 
