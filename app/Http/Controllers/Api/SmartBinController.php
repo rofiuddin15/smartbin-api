@@ -72,6 +72,9 @@ class SmartBinController extends Controller
             'bin_code' => 'required|string|unique:smart_bins,bin_code',
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
+            'responsible_person' => 'nullable|string|max:255',
+            'username' => 'required|string|unique:smart_bins,username',
+            'password' => 'required|string|min:6',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
         ]);
@@ -88,6 +91,9 @@ class SmartBinController extends Controller
             'bin_code' => $request->bin_code,
             'name' => $request->name,
             'location' => $request->location,
+            'responsible_person' => $request->responsible_person,
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
             'status' => 'offline',
@@ -100,6 +106,77 @@ class SmartBinController extends Controller
             'message' => 'Smart bin registered successfully',
             'data' => $smartBin
         ], 201);
+    }
+
+    /**
+     * Update an existing smart bin
+     */
+    public function update(Request $request, $id)
+    {
+        $bin = SmartBin::find($id);
+
+        if (!$bin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Smart bin not found'
+            ], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'bin_code' => 'sometimes|string|unique:smart_bins,bin_code,' . $id,
+            'name' => 'sometimes|string|max:255',
+            'location' => 'sometimes|string|max:255',
+            'responsible_person' => 'nullable|string|max:255',
+            'username' => 'sometimes|string|unique:smart_bins,username,' . $id,
+            'password' => 'nullable|string|min:6',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
+            'status' => 'sometimes|in:online,offline,full,maintenance',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $data = $request->only(['bin_code', 'name', 'location', 'responsible_person', 'username', 'latitude', 'longitude', 'status']);
+        
+        if ($request->has('password') && $request->password) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $bin->update($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Smart bin updated successfully',
+            'data' => $bin
+        ], 200);
+    }
+
+    /**
+     * Delete a smart bin
+     */
+    public function destroy($id)
+    {
+        $bin = SmartBin::find($id);
+
+        if (!$bin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Smart bin not found'
+            ], 404);
+        }
+
+        $bin->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Smart bin deleted successfully'
+        ], 200);
     }
 
     /**

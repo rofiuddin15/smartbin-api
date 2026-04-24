@@ -11,6 +11,21 @@ use Illuminate\Support\Facades\Validator;
 class UserController extends Controller
 {
     /**
+     * List all users
+     */
+    public function index(Request $request)
+    {
+        // For admin dashboard, list all users
+        // You might want to add pagination later: User::paginate(10)
+        $users = User::all();
+
+        return response()->json([
+            'success' => true,
+            'data' => $users
+        ], 200);
+    }
+
+    /**
      * Get user profile
      */
     public function profile(Request $request)

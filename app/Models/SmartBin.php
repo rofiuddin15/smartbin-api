@@ -13,12 +13,19 @@ class SmartBin extends Model
         'bin_code',
         'name',
         'location',
+        'responsible_person',
+        'username',
+        'password',
         'latitude',
         'longitude',
         'status',
         'capacity_percentage',
         'total_bottles_collected',
         'last_online_at',
+    ];
+
+    protected $hidden = [
+        'password',
     ];
 
     protected $casts = [
