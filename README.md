@@ -93,6 +93,14 @@ php artisan serve
 npm run dev
 ```
 
+### 🗺️ Konfigurasi Mapbox (Peta)
+Agar peta pada menu **Perangkat IoT** dapat muncul, pastikan Anda telah menyetel token Mapbox di file `.env`:
+
+```env
+VITE_MAPBOX_TOKEN=your_mapbox_public_token_here
+```
+*Catatan: Jika Anda menggunakan token sendiri, pastikan domain `localhost` sudah diizinkan di dashboard Mapbox Anda.*
+
 ---
 
 ## 📖 Panduan Penggunaan Admin
