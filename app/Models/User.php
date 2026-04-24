@@ -26,6 +26,10 @@ class User extends Authenticatable
         'phone_number',
         'pin',
         'total_points',
+        'status',
+        'rejection_reason',
+        'is_verified',
+        'avatar_url',
     ];
 
     /**
@@ -50,6 +54,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'pin' => 'hashed',
+            'is_verified' => 'boolean',
         ];
     }
 

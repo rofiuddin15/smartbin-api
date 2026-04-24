@@ -1,263 +1,125 @@
-# 🗑️ Smart Bin Backend API
+# 🗑️ SmartBin Pamekasan - Ecosystem & Admin Dashboard
 
-Backend API untuk ekosistem Smart Bin - sistem daur ulang botol cerdas dengan reward points yang dapat ditukar ke e-wallet.
+Sistem manajemen daur ulang botol cerdas berbasis IoT yang mengintegrasikan aplikasi mobile pengguna, perangkat penampung sampah pintar, dan dashboard administrasi real-time.
 
-## 📋 Deskripsi
+## 📋 Deskripsi Proyek
 
-Aplikasi backend ini adalah bagian dari ekosistem Smart Bin yang terdiri dari:
-
-1. **Aplikasi Mobile (Android)** - Untuk pengguna mendaftar dan mengelola akun
-2. **Smart Bin System** - Aplikasi di layar bin untuk autentikasi dan deposit
-3. **Backend API** - Server untuk mengelola data dan komunikasi real-time
-
-## ✨ Fitur Utama
-
-### Autentikasi & Manajemen Pengguna
-
--   ✅ Registrasi pengguna dengan email, nama, nomor HP, dan PIN
--   ✅ Login/Logout menggunakan Laravel Sanctum
--   ✅ Reset password
--   ✅ Manajemen profil pengguna
--   ✅ Ganti PIN dan password
--   ✅ Validasi PIN untuk Smart Bin
-
-### Smart Bin Management
-
--   ✅ Daftar lokasi Smart Bin dengan status (online/offline/full)
--   ✅ Pencarian bin berdasarkan lokasi (GPS)
--   ✅ Update status bin secara real-time
--   ✅ Heartbeat monitoring untuk bin
--   ✅ Validasi PIN pengguna di bin
-
-### Sistem Poin & Transaksi
-
--   ✅ Deposit botol → tambah poin (10 poin/botol)
--   ✅ Riwayat transaksi lengkap
--   ✅ Point transaction log detail
--   ✅ Akumulasi poin per pengguna
-
-### Redeem & E-Wallet
-
--   ✅ Tukar poin ke e-wallet (GoPay, OVO, DANA, ShopeePay)
--   ✅ Konversi rate: 1 poin = Rp 10
--   ✅ Minimum redeem: 100 poin
--   ✅ Paket redeem siap pakai
--   ✅ Riwayat penukaran
-
-### Real-time Features
-
--   ✅ Broadcasting event untuk update poin
--   ✅ Broadcasting status Smart Bin
--   ✅ WebSocket ready untuk komunikasi real-time
-
-## 🛠️ Tech Stack
-
--   **Framework:** Laravel 12
--   **PHP:** 8.2+
--   **Database:** SQLite (dev) / MySQL (production)
--   **Authentication:** Laravel Sanctum
--   **Broadcasting:** Laravel Echo (ready)
--   **API:** RESTful JSON API
-
-## 📦 Instalasi
-
-### Prerequisites
-
--   PHP 8.2 atau lebih tinggi
--   Composer
--   SQLite (atau MySQL/PostgreSQL untuk production)
-
-### Langkah Instalasi
-
-1. **Clone repository**
-
-```bash
-git clone <repository-url>
-cd smartbin_backend
-```
-
-2. **Install dependencies**
-
-```bash
-composer install
-```
-
-3. **Setup environment**
-
-```bash
-cp .env.example .env
-php artisan key:generate
-```
-
-4. **Run migrations**
-
-```bash
-php artisan migrate
-```
-
-5. **Seed database dengan data sample**
-
-```bash
-php artisan db:seed
-```
-
-6. **Start development server**
-
-```bash
-php artisan serve
-```
-
-API akan berjalan di `http://127.0.0.1:8000`
-
-## 🧪 Testing
-
-### Test Account
-
-Setelah seeding, gunakan akun berikut untuk testing:
-
-**User 1:**
-
--   Email: `test@example.com`
--   Password: `password`
--   PIN: `1234`
--   Points: 500
-
-**User 2:**
-
--   Email: `john@example.com`
--   Password: `password`
--   PIN: `5678`
--   Points: 1200
-
-### Sample Smart Bins
-
--   SB001 - Mall ABC (Online, 25% capacity)
--   SB002 - Universitas XYZ (Online, 60% capacity)
--   SB003 - Taman Kota (Online, 15% capacity)
--   SB004 - Kantor Pemerintah (Offline)
--   SB005 - Stasiun Kereta (Full, 95% capacity)
-
-### Test dengan cURL
-
-**Login:**
-
-```bash
-curl -X POST http://127.0.0.1:8000/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password"}'
-```
-
-**Get Smart Bins:**
-
-```bash
-curl -X GET http://127.0.0.1:8000/api/v1/smart-bins
-```
-
-### Postman Collection
-
-Import file `SmartBin_API.postman_collection.json` ke Postman untuk testing lengkap.
-
-## 📚 Dokumentasi API
-
-Lihat dokumentasi lengkap di: [API_DOCUMENTATION.md](./API_DOCUMENTATION.md)
-
-### Base URL
-
-```
-http://127.0.0.1:8000/api/v1
-```
-
-### Endpoint Groups
-
--   `/auth/*` - Authentication
--   `/user/*` - User profile management
--   `/smart-bins/*` - Smart Bin operations
--   `/transactions/*` - Transaction history & deposits
--   `/redeem/*` - Points redemption
-
-## 🗄️ Database Schema
-
-### Tables
-
--   **users** - Data pengguna, poin, PIN
--   **smart_bins** - Data bin, lokasi, status
--   **transactions** - Transaksi deposit & redeem
--   **point_transactions** - Log detail perubahan poin
--   **personal_access_tokens** - API tokens (Sanctum)
-
-### Relationships
-
-```
-User ─────< Transaction ─────< PointTransaction
-             │
-             └──── SmartBin
-```
-
-## 🔄 Real-time Events
-
-### PointsUpdated
-
--   **Channel:** `user.{user_id}` (Private)
--   **Trigger:** Saat deposit atau redeem
--   **Data:** user_id, total_points, points_change, description
-
-### SmartBinStatusUpdated
-
--   **Channel:** `smart-bins` (Public)
--   **Trigger:** Saat status bin berubah
--   **Data:** bin_id, status, capacity, location
-
-## 🚀 Deployment
-
-### Production Checklist
-
--   [ ] Ubah `APP_ENV=production` di .env
--   [ ] Set `APP_DEBUG=false`
--   [ ] Gunakan MySQL/PostgreSQL
--   [ ] Setup Redis untuk cache & queue
--   [ ] Configure proper CORS
--   [ ] Setup SSL/HTTPS
--   [ ] Configure broadcasting driver (Pusher/Socket.io)
--   [ ] Setup payment gateway integration
--   [ ] Configure email service
--   [ ] Setup backup database
-
-## 🔐 Security
-
--   Semua password & PIN di-hash dengan bcrypt
--   API authentication menggunakan Laravel Sanctum
--   CSRF protection enabled
--   Rate limiting implemented
--   Input validation pada semua endpoint
-
-## 🤝 Integrasi dengan Komponen Lain
-
-### Mobile App (Android)
-
--   Konsumsi REST API untuk semua operasi
--   Subscribe ke WebSocket untuk real-time updates
--   Autentikasi menggunakan Bearer token
-
-### Smart Bin System
-
--   Validasi PIN via API `/smart-bins/validate-pin`
--   Submit deposit via `/transactions/deposit`
--   Heartbeat monitoring via `/smart-bins/{id}/heartbeat`
--   Update status via `/smart-bins/{id}/status`
-
-### Payment Gateway (Future)
-
--   Integrasi Midtrans/Xendit untuk redeem
--   Webhook untuk konfirmasi pembayaran
-
-## 📝 License
-
-MIT License
-
-## 👥 Contact
-
-Untuk pertanyaan atau support, silakan hubungi tim development.
+SmartBin Pamekasan adalah solusi teknologi untuk pengelolaan limbah anorganik (botol plastik) dengan mekanisme reward. Proyek ini merupakan sistem *hybrid* yang menggabungkan:
+1. **Backend API (Laravel 12)**: Otak sistem yang mengelola basis data, logika bisnis, dan komunikasi IoT.
+2. **Admin Dashboard (React + Vite)**: Panel kendali pusat untuk memonitor aset IoT, moderasi member, dan laporan keuangan.
+3. **IoT Device System**: Perangkat keras yang diletakkan di lokasi publik untuk menerima setoran botol.
+4. **Aplikasi Mobile**: Antarmuka pengguna untuk melihat poin, lokasi bin, dan penukaran saldo.
 
 ---
 
-**Built with ❤️ using Laravel**
+## ✨ Fitur Utama
+
+### 🖥️ Dashboard Administrasi (Web)
+- **Monitoring IoT Real-time**: Pantau status koneksi, kapasitas sampah, dan kesehatan baterai perangkat di peta interaktif.
+- **Moderasi Member**: Sistem verifikasi pendaftaran pengguna mobile, persetujuan akun, dan manajemen blokir.
+- **Manajemen Staff & RBAC**: Pengaturan hak akses berlapis (Role-Based Access Control) menggunakan Spatie.
+- **Manajemen Payout**: Proses pencairan poin member ke berbagai e-wallet (GoPay, OVO, DANA) secara terkontrol.
+- **Laporan Keuangan**: Visualisasi pendapatan dari hasil penjualan sampah vs pengeluaran pencairan poin.
+
+### ⚙️ Backend API & IoT
+- **Autentikasi Aman**: Menggunakan Laravel Sanctum untuk aplikasi mobile dan admin.
+- **IoT Heartbeat**: Monitor konektivitas perangkat secara otomatis (Online/Offline).
+- **Validasi PIN**: Keamanan ganda saat setor botol di perangkat fisik menggunakan enkripsi PIN.
+- **Broadcasting Event**: Update poin dan status bin secara instan menggunakan Laravel Echo/Websocket.
+
+---
+
+## 🔄 Alur Kerja Sistem (Workflow)
+
+### 1. Proses Setor Sampah (IoT to Backend)
+1. **Autentikasi**: Pengguna memasukkan PIN di perangkat SmartBin.
+2. **Validasi**: Perangkat mengirimkan PIN ke Backend API untuk verifikasi identitas.
+3. **Setor**: Pengguna memasukkan botol, sensor mendeteksi jumlah, dan perangkat mengirimkan data setoran.
+4. **Reward**: Backend menambahkan poin ke akun pengguna dan mengirimkan notifikasi real-time.
+
+### 2. Proses Pencairan (User to Admin)
+1. **Request**: Pengguna melakukan permintaan tukar poin ke saldo E-Money melalui aplikasi mobile.
+2. **Moderasi**: Permintaan muncul di Dashboard Admin pada menu "Penukaran Poin".
+3. **Eksekusi**: Admin memverifikasi data dan memproses transfer, kemudian menandai transaksi sebagai "Berhasil".
+
+### 3. Monitoring Aset (IoT to Admin)
+1. **Heartbeat**: Setiap 1-5 menit, perangkat SmartBin mengirimkan sinyal "hidup".
+2. **Alerting**: Jika kapasitas > 85%, sistem menandai bin sebagai "PENUH" di peta admin agar petugas dapat segera melakukan pengangkutan.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Backend**: Laravel 12 (PHP 8.2+), MySQL/SQLite, Spatie Permission.
+- **Frontend Admin**: React 18, Vite, TypeScript, TailwindCSS, Lucide Icons.
+- **Charts & Maps**: Recharts (Statistik), Mapbox GL (Peta Lokasi).
+- **Komunikasi**: REST API, WebSockets (Broadcasting).
+
+---
+
+## 📦 Instalasi & Setup
+
+### 1. Prasyarat
+- PHP 8.2 & Composer
+- Node.js (LTS) & NPM
+- Database (MySQL atau SQLite)
+
+### 2. Langkah Instalasi
+```bash
+# 1. Clone repository
+git clone <repository-url>
+cd smartbin-api
+
+# 2. Install dependensi Backend (PHP)
+composer install
+
+# 3. Install dependensi Frontend (JS)
+npm install
+
+# 4. Setup Environment
+cp .env.example .env
+php artisan key:generate
+
+# 5. Database Setup
+# Buat database kosong terlebih dahulu di MySQL
+php artisan migrate
+php artisan db:seed --class=RolePermissionSeeder
+
+# 6. Build atau Jalankan Development Server
+# Terminal 1 (Backend)
+php artisan serve
+
+# Terminal 2 (Frontend Watcher)
+npm run dev
+```
+
+---
+
+## 📖 Panduan Penggunaan Admin
+
+### Akses Dashboard
+- Masuk ke URL default `http://localhost:8000`.
+- Jika Anda belum memiliki akun, gunakan seeder untuk membuat akun admin default:
+  - **Email**: `admin@smartbin.com`
+  - **Password**: `password`
+
+### Kelola Perangkat IoT
+1. Buka menu **"Perangkat IoT"**.
+2. Anda dapat melihat distribusi bin di peta Mapbox.
+3. Gunakan tombol **"Tambah Perangkat"** untuk meregistrasi unit SmartBin baru dengan koordinat latitude/longitude yang akurat.
+
+### Moderasi Member Baru
+1. Buka menu **"Moderasi Member"**.
+2. Cek tab **"Verifikasi"** untuk melihat pendaftar baru dari aplikasi mobile.
+3. Klik ikon "Check" untuk menyetujui member agar mereka bisa mulai menukarkan botol.
+
+---
+
+## 🔐 Keamanan
+- Seluruh endpoint administrasi dilindungi oleh middleware `auth:sanctum` dan `role:admin`.
+- Enkripsi data sensitif (Password/PIN) menggunakan Bcrypt.
+- Proteksi CSRF dan Rate Limiting pada endpoint IoT untuk mencegah serangan brute force.
+
+---
+
+**Satu botol, satu poin, untuk Pamekasan yang lebih bersih.** 🌿

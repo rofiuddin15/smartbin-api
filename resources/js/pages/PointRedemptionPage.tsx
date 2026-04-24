@@ -10,6 +10,12 @@ import {
     Wallet
 } from 'lucide-react';
 import api from '../utils/api';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs));
+}
 
 interface PayoutRequest {
     id: number;
@@ -37,41 +43,41 @@ const PointRedemptionPage: React.FC = () => {
 
     const getStatusInfo = (status: string) => {
         switch (status) {
-            case 'pending': return { color: 'bg-yellow-100 text-yellow-700', icon: Clock, label: 'Pending Approval' };
-            case 'completed': return { color: 'bg-green-100 text-green-700', icon: CheckCircle2, label: 'Processed' };
-            case 'failed': return { color: 'bg-red-100 text-red-700', icon: XCircle, label: 'Rejected' };
-            default: return { color: 'bg-gray-100 text-gray-700', icon: Clock, label: status };
+            case 'pending': return { color: 'bg-yellow-50 text-yellow-700 border-yellow-100', icon: Clock, label: 'Menunggu Persetujuan' };
+            case 'completed': return { color: 'bg-green-50 text-green-700 border-green-100', icon: CheckCircle2, label: 'Berhasil Diproses' };
+            case 'failed': return { color: 'bg-red-50 text-red-700 border-red-100', icon: XCircle, label: 'Ditolak/Gagal' };
+            default: return { color: 'bg-gray-50 text-gray-700 border-gray-100', icon: Clock, label: status };
         }
     };
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-semibold text-gray-800">E-Money Payouts</h1>
-                    <p className="text-sm text-gray-500">Review and process user point redemption requests</p>
+                    <h1 className="text-xl font-black text-gray-800 uppercase tracking-tight">Pencairan Saldo (Payout)</h1>
+                    <p className="text-xs text-gray-500">Tinjau dan proses permintaan penukaran poin member ke E-Money</p>
                 </div>
                 <div className="flex gap-2">
-                    <button className="flex items-center gap-2 bg-white border border-gray-300 px-4 py-2 rounded text-sm text-gray-700 hover:bg-gray-50">
+                    <button className="flex items-center gap-2 bg-white border border-gray-200 px-5 py-2 rounded text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 shadow-sm transition-all">
                         <Download size={16} />
-                        Export Log
+                        Ekspor Log
                     </button>
-                    <button className="bg-admin-primary text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700">
-                        Process Batch
+                    <button className="bg-admin-primary text-white px-5 py-2 rounded text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-admin-primary/20 transition-all">
+                        Proses Massal
                     </button>
                 </div>
             </div>
 
             {/* Request List */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-                <div className="p-4 border-b border-gray-200 bg-gray-50/30 flex items-center justify-between">
-                    <h3 className="font-semibold text-gray-700 flex items-center gap-2">
-                        <Wallet size={18} className="text-admin-info" />
-                        Payout Queue
+            <div className="bg-white rounded border border-gray-200 shadow-sm overflow-hidden">
+                <div className="p-4 border-b border-gray-100 bg-gray-50/30 flex items-center justify-between">
+                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                        <Wallet size={16} className="text-admin-info" />
+                        Antrean Pencairan
                     </h3>
                     <div className="flex items-center gap-3">
-                        <select className="text-xs border-gray-300 rounded focus:ring-admin-primary focus:border-admin-primary px-2 py-1">
-                            <option value="all">All Wallets</option>
+                        <select className="text-[10px] font-bold border-gray-200 rounded outline-none focus:border-admin-primary px-3 py-1 uppercase bg-white">
+                            <option value="all">Semua Dompet</option>
                             <option value="gopay">GoPay</option>
                             <option value="ovo">OVO</option>
                             <option value="dana">Dana</option>
@@ -80,45 +86,50 @@ const PointRedemptionPage: React.FC = () => {
                 </div>
 
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left">
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b border-gray-200">
+                    <table className="w-full text-left">
+                        <thead className="text-[10px] text-gray-400 font-black uppercase tracking-widest bg-gray-50/30 border-b border-gray-100">
                             <tr>
-                                <th className="px-6 py-4 font-semibold">Request ID</th>
-                                <th className="px-6 py-4 font-semibold">User</th>
-                                <th className="px-6 py-4 font-semibold">Redeem Details</th>
-                                <th className="px-6 py-4 font-semibold">Payout Destination</th>
-                                <th className="px-6 py-4 font-semibold">Status</th>
-                                <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                                <th className="px-6 py-3 font-black">ID Permintaan</th>
+                                <th className="px-6 py-3 font-black">Member</th>
+                                <th className="px-6 py-3 font-black">Detail Penukaran</th>
+                                <th className="px-6 py-3 font-black">Tujuan Pencairan</th>
+                                <th className="px-6 py-3 font-black">Status</th>
+                                <th className="px-6 py-3 font-black text-right">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-gray-50">
                             {payouts.map((req) => {
                                 const status = getStatusInfo(req.status);
                                 return (
-                                    <tr key={req.id} className="hover:bg-gray-50/50 transition-all">
-                                        <td className="px-6 py-4 font-mono text-xs text-gray-500">#{req.id}</td>
-                                        <td className="px-6 py-4 font-medium text-gray-800">{req.user_name}</td>
+                                    <tr key={req.id} className="hover:bg-gray-50/50 transition-all group">
+                                        <td className="px-6 py-4 font-black text-[10px] text-gray-400">#{req.id}</td>
+                                        <td className="px-6 py-4">
+                                            <p className="text-xs font-black text-gray-800 uppercase tracking-tight">{req.user_name}</p>
+                                        </td>
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col">
-                                                <span className="font-bold text-gray-800">Rp {req.amount_idr.toLocaleString()}</span>
-                                                <span className="text-[10px] text-gray-400 flex items-center gap-1">
-                                                    <Coins size={10} /> {req.points.toLocaleString()} Points
+                                                <span className="text-sm font-black text-gray-800">Rp {req.amount_idr.toLocaleString('id-ID')}</span>
+                                                <span className="text-[9px] text-gray-400 font-black uppercase flex items-center gap-1">
+                                                    <Coins size={10} /> {req.points.toLocaleString()} POIN
                                                 </span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-8 h-8 rounded bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500 border border-gray-200">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded bg-gray-100 flex items-center justify-center text-[9px] font-black text-gray-400 border border-gray-200 uppercase tracking-tighter">
                                                     {req.ewallet_type.substring(0, 3)}
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <span className="text-xs font-semibold">{req.ewallet_type}</span>
-                                                    <span className="text-[10px] font-mono text-gray-500">{req.ewallet_account}</span>
+                                                    <span className="text-[10px] font-black text-gray-800 uppercase">{req.ewallet_type}</span>
+                                                    <span className="text-[10px] font-bold text-gray-400 font-mono tracking-wider">{req.ewallet_account}</span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${status.color}`}>
+                                            <span className={cn(
+                                                "inline-flex items-center gap-1.5 px-3 py-1 rounded text-[9px] font-black uppercase tracking-widest border",
+                                                status.color
+                                            )}>
                                                 <status.icon size={12} />
                                                 {status.label}
                                             </span>
@@ -126,15 +137,15 @@ const PointRedemptionPage: React.FC = () => {
                                         <td className="px-6 py-4 text-right">
                                             {req.status === 'pending' ? (
                                                 <div className="flex items-center justify-end gap-2">
-                                                    <button className="bg-admin-success text-white px-3 py-1 rounded text-[10px] font-bold hover:bg-green-700 transition-colors shadow-sm">
-                                                        Approve
+                                                    <button className="bg-admin-success text-white px-4 py-1.5 rounded text-[9px] font-black uppercase tracking-widest hover:bg-green-700 transition-all shadow-md shadow-green-900/20">
+                                                        Setujui
                                                     </button>
-                                                    <button className="bg-white border border-admin-danger text-admin-danger px-3 py-1 rounded text-[10px] font-bold hover:bg-admin-danger hover:text-white transition-all">
-                                                        Reject
+                                                    <button className="bg-white border border-red-100 text-red-600 px-4 py-1.5 rounded text-[9px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all">
+                                                        Tolak
                                                     </button>
                                                 </div>
                                             ) : (
-                                                <button className="p-1.5 text-gray-400 hover:text-admin-primary rounded">
+                                                <button className="p-1.5 text-gray-300 hover:text-admin-primary rounded transition-colors">
                                                     <ExternalLink size={16} />
                                                 </button>
                                             )}
@@ -146,10 +157,10 @@ const PointRedemptionPage: React.FC = () => {
                     </table>
                 </div>
 
-                <div className="p-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center rounded-b-lg">
-                    <p className="text-[10px] text-gray-500 italic">Total Pending Payout: <span className="font-bold text-gray-700">Rp 150,000</span></p>
+                <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Pencairan Tertunda: <span className="font-black text-admin-primary">Rp 150.000</span></p>
                     <div className="flex gap-2">
-                        <span className="text-[10px] text-gray-400">Page 1 of 5</span>
+                        <span className="text-[9px] font-black text-gray-300 uppercase">Halaman 1 dari 5</span>
                     </div>
                 </div>
             </div>

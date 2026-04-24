@@ -1,154 +1,353 @@
-import React, { useState, useEffect } from 'react';
-import { UserPlus, Shield, UserCog, Mail, Key, Trash2, Edit2, BadgeCheck } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { 
+    createColumnHelper, 
+    flexRender, 
+    getCoreRowModel, 
+    useReactTable,
+    getSortedRowModel,
+    SortingState,
+} from '@tanstack/react-table';
+import { 
+    UserPlus, Shield, UserCog, Mail, Key, Trash2, Edit2, 
+    BadgeCheck, Search, Filter, X, Save, Ban, CheckCircle, 
+    ChevronUp, ChevronDown, Activity, ShieldCheck, Lock
+} from 'lucide-react';
 import api from '../utils/api';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs));
+}
+
+interface Role {
+    id: number;
+    name: string;
+}
 
 interface Staff {
     id: number;
     name: string;
     email: string;
-    role: 'admin' | 'operator' | 'finance';
+    roles: string[];
+    status: 'active' | 'suspended';
     created_at: string;
 }
 
 const StaffManagementPage: React.FC = () => {
     const [staffList, setStaffList] = useState<Staff[]>([]);
+    const [roles, setRoles] = useState<Role[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [sorting, setSorting] = useState<SortingState>([]);
+    
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: '',
+        roles: [] as string[]
+    });
 
     useEffect(() => {
-        // Fallback data
-        setStaffList([
-            { id: 1, name: 'System Admin', email: 'admin@smartbin.example', role: 'admin', created_at: '2023-01-01' },
-            { id: 2, name: 'Budi Operation', email: 'budi@smartbin.example', role: 'operator', created_at: '2023-11-15' },
-            { id: 3, name: 'Ani Finance', email: 'ani@smartbin.example', role: 'finance', created_at: '2023-11-16' },
-        ]);
+        fetchStaff();
+        fetchRoles();
     }, []);
 
-    const getRoleBadge = (role: string) => {
-        const styles = {
-            admin: 'bg-purple-100 text-purple-700 border-purple-200',
-            operator: 'bg-blue-100 text-blue-700 border-blue-200',
-            finance: 'bg-orange-100 text-orange-700 border-orange-200',
-        };
-        return (
-            <span className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase ${styles[role as keyof typeof styles]}`}>
-                {role}
-            </span>
-        );
+    const fetchStaff = async () => {
+        try {
+            setLoading(true);
+            const response = await api.get('/users');
+            const data = response.data.data.data || response.data.data;
+            
+            setStaffList(data.map((u: any) => ({
+                id: u.id,
+                name: u.name,
+                email: u.email,
+                roles: u.roles || [],
+                status: u.status || 'active',
+                created_at: u.created_at
+            })));
+        } catch (error) {
+            console.error('Error fetching staff:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
+    const fetchRoles = async () => {
+        try {
+            const response = await api.get('/roles');
+            setRoles(response.data.data);
+        } catch (error) {
+            console.error('Error fetching roles:', error);
+        }
+    };
+
+    const handleOpenModal = (staff: Staff | null = null) => {
+        if (staff) {
+            setEditingStaff(staff);
+            setFormData({
+                name: staff.name,
+                email: staff.email,
+                password: '',
+                roles: staff.roles
+            });
+        } else {
+            setEditingStaff(null);
+            setFormData({ name: '', email: '', password: '', roles: [] });
+        }
+        setIsModalOpen(true);
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            if (editingStaff) {
+                await api.put(`/users/${editingStaff.id}`, {
+                    name: formData.name,
+                    email: formData.email,
+                    ...(formData.password ? { password: formData.password } : {})
+                });
+                await api.post('/roles/sync', {
+                    user_id: editingStaff.id,
+                    roles: formData.roles
+                });
+            } else {
+                const response = await api.post('/users', formData);
+                const newUserId = response.data.data.id;
+                await api.post('/roles/sync', {
+                    user_id: newUserId,
+                    roles: formData.roles
+                });
+            }
+            setIsModalOpen(false);
+            fetchStaff();
+        } catch (error) {
+            console.error('Error saving staff:', error);
+            alert('Gagal menyimpan data staff');
+        }
+    };
+
+    const handleToggleStatus = async (staff: Staff) => {
+        const newStatus = staff.status === 'active' ? 'suspended' : 'active';
+        const confirmMsg = staff.status === 'active' 
+            ? 'Apakah Anda yakin ingin menonaktifkan staff ini?' 
+            : 'Apakah Anda yakin ingin mengaktifkan kembali staff ini?';
+            
+        if (!confirm(confirmMsg)) return;
+        
+        try {
+            await api.put(`/admin/users/${staff.id}/status`, { status: newStatus });
+            fetchStaff();
+        } catch (error) {
+            console.error('Error updating status:', error);
+        }
+    };
+
+    const toggleRole = (roleName: string) => {
+        setFormData(prev => ({
+            ...prev,
+            roles: prev.roles.includes(roleName)
+                ? prev.roles.filter(r => r !== roleName)
+                : [...prev.roles, roleName]
+        }));
+    };
+
+    const columnHelper = createColumnHelper<Staff>();
+    const columns = useMemo(() => [
+        columnHelper.accessor('name', {
+            header: 'Nama Lengkap',
+            cell: info => (
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded bg-gray-100 flex items-center justify-center border border-gray-200 shadow-sm">
+                        <UserCog size={16} className="text-gray-400" />
+                    </div>
+                    <div>
+                        <p className="font-black text-gray-800 text-[11px] uppercase tracking-tight">{info.getValue()}</p>
+                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">ID-{info.row.original.id.toString().padStart(4, '0')}</p>
+                    </div>
+                </div>
+            ),
+        }),
+        columnHelper.accessor('roles', {
+            header: 'Peran / Role',
+            cell: info => (
+                <div className="flex flex-wrap gap-1">
+                    {info.getValue().length > 0 ? info.getValue().map(role => (
+                        <span key={role} className="px-2 py-0.5 rounded bg-admin-primary/10 text-admin-primary border border-admin-primary/20 text-[9px] font-black uppercase tracking-tighter shadow-sm">
+                            {role}
+                        </span>
+                    )) : <span className="text-[9px] text-gray-300 font-bold italic">Tanpa Role</span>}
+                </div>
+            ),
+        }),
+        columnHelper.accessor('email', {
+            header: 'Alamat Email',
+            cell: info => <span className="text-[11px] text-gray-600 font-bold">{info.getValue()}</span>,
+        }),
+        columnHelper.accessor('status', {
+            header: 'Status',
+            cell: info => (
+                <span className={cn(
+                    "px-2 py-0.5 rounded text-[9px] font-black uppercase border tracking-widest",
+                    info.getValue() === 'active' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'
+                )}>
+                    {info.getValue() === 'active' ? 'Aktif' : 'Nonaktif'}
+                </span>
+            ),
+        }),
+        columnHelper.display({
+            id: 'actions',
+            cell: info => (
+                <div className="flex items-center justify-end gap-1">
+                    <button onClick={() => handleOpenModal(info.row.original)} className="p-1.5 text-gray-400 hover:text-admin-primary hover:bg-gray-50 rounded transition-all"><Edit2 size={14} /></button>
+                    <button onClick={() => handleToggleStatus(info.row.original)} className={cn("p-1.5 rounded transition-all", info.row.original.status === 'active' ? "text-gray-400 hover:text-red-500 hover:bg-red-50" : "text-gray-400 hover:text-green-500 hover:bg-green-50")}>
+                        {info.row.original.status === 'active' ? <Ban size={14} /> : <CheckCircle size={14} />}
+                    </button>
+                </div>
+            ),
+        }),
+    ], []);
+
+    const table = useReactTable({
+        data: staffList,
+        columns,
+        state: { sorting },
+        onSortingChange: setSorting,
+        getCoreRowModel: getCoreRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+    });
+
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
+        <div className="space-y-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-semibold text-gray-800">Staff & Administration</h1>
-                    <p className="text-sm text-gray-500">Manage internal team members and their system access</p>
+                    <h1 className="text-xl font-black text-gray-800 tracking-tight uppercase">Manajemen Staff</h1>
+                    <p className="text-xs text-gray-500">Kelola peran tim internal dan akses sistem administrasi</p>
                 </div>
-                <button className="flex items-center gap-2 bg-admin-primary text-white px-4 py-2 rounded-lg shadow-sm hover:bg-blue-700 transition-all font-medium text-sm">
-                    <UserPlus size={18} />
-                    Add Team Member
-                </button>
+                <div className="flex items-center gap-3">
+                    <div className="relative">
+                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input 
+                            type="text" 
+                            placeholder="Cari staff..." 
+                            className="pl-9 pr-4 py-1.5 text-xs border border-gray-200 rounded outline-none focus:border-admin-primary w-48 bg-white shadow-sm"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <button onClick={() => handleOpenModal()} className="flex items-center gap-2 bg-admin-primary text-white px-5 py-2 rounded shadow hover:bg-blue-700 transition-all font-black text-[10px] uppercase tracking-widest">
+                        <UserPlus size={16} />
+                        Tambah Staff
+                    </button>
+                </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Staff List Table */}
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div className="p-4 border-b border-gray-200 bg-gray-50/50 flex items-center gap-2">
-                            <Shield size={18} className="text-admin-primary" />
-                            <h3 className="font-semibold text-gray-700">Internal Team</h3>
-                        </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm text-left">
-                                <thead className="bg-gray-50 text-gray-700 uppercase text-[10px] tracking-wider border-b border-gray-200 font-bold">
-                                    <tr>
-                                        <th className="px-6 py-4">Name & Role</th>
-                                        <th className="px-6 py-4">Email Address</th>
-                                        <th className="px-6 py-4">Joined Date</th>
-                                        <th className="px-6 py-4 text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-100">
-                                    {staffList.map((staff) => (
-                                        <tr key={staff.id} className="hover:bg-gray-50/50">
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200">
-                                                        <UserCog size={18} className="text-gray-500" />
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <span className="font-semibold text-gray-800 flex items-center gap-1.5">
-                                                            {staff.name}
-                                                            {staff.role === 'admin' && <BadgeCheck size={14} className="text-admin-primary" />}
-                                                        </span>
-                                                        <div className="mt-1">{getRoleBadge(staff.role)}</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 text-gray-600">
-                                                <div className="flex items-center gap-2">
-                                                    <Mail size={14} className="text-gray-400" />
-                                                    <span className="text-xs">{staff.email}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 text-xs text-gray-500">
-                                                {new Date(staff.created_at).toLocaleDateString()}
-                                            </td>
-                                            <td className="px-6 py-4 text-right">
-                                                <div className="flex items-center justify-end gap-1">
-                                                    <button className="p-2 text-gray-400 hover:text-admin-primary rounded transition-colors">
-                                                        <Edit2 size={16} />
-                                                    </button>
-                                                    <button className="p-2 text-gray-400 hover:text-admin-danger rounded transition-colors">
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
+            <div className="bg-white border border-gray-200 rounded overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead className="bg-gray-50 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                            {table.getHeaderGroups().map(headerGroup => (
+                                <tr key={headerGroup.id}>
+                                    {headerGroup.headers.map(header => (
+                                        <th key={header.id} className="px-6 py-3 cursor-pointer select-none" onClick={header.column.getToggleSortingHandler()}>
+                                            <div className="flex items-center gap-1">
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                                {header.column.getIsSorted() && (header.column.getIsSorted() === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />)}
+                                            </div>
+                                        </th>
                                     ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Role Permissions Summary */}
-                <div className="space-y-6">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                        <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-                            <Key size={18} className="text-admin-warning" />
-                            Role Access Overview
-                        </h3>
-                        <div className="space-y-4">
-                            <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
-                                <h4 className="text-xs font-bold text-purple-700 uppercase mb-1">Administrator</h4>
-                                <p className="text-[10px] text-purple-600">Full system access including staff management, finances, and global settings.</p>
-                            </div>
-                            <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
-                                <h4 className="text-xs font-bold text-blue-700 uppercase mb-1">Operator</h4>
-                                <p className="text-[10px] text-blue-600">Manage Smart Bin locations, monitor IoT status, and view user details.</p>
-                            </div>
-                            <div className="p-3 bg-orange-50 rounded-lg border border-orange-100">
-                                <h4 className="text-xs font-bold text-orange-700 uppercase mb-1">Finance</h4>
-                                <p className="text-[10px] text-orange-600">Manage point redemptions, e-money payouts, and financial reports.</p>
-                            </div>
-                        </div>
-                        <button className="w-full mt-6 py-2 rounded-lg border border-gray-200 text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors">
-                            Configure Custom Roles
-                        </button>
-                    </div>
-
-                    <div className="bg-admin-dark rounded-xl shadow-lg p-5 text-white overflow-hidden relative">
-                        <Shield size={120} className="absolute -right-10 -bottom-10 text-white/5 rotate-12" />
-                        <h3 className="font-bold text-lg mb-2 relative z-10">Security Policy</h3>
-                        <p className="text-xs text-gray-400 mb-4 relative z-10 leading-relaxed">
-                            Team members must use strong passwords. PIN requests from Smart Bins are logged for forensic analysis.
-                        </p>
-                        <div className="flex items-center gap-2 text-[10px] font-bold text-admin-success bg-white/5 self-start px-2 py-1 rounded relative z-10">
-                            <span className="w-1.5 h-1.5 bg-admin-success rounded-full animate-pulse"></span>
-                            2FA ACTIVE GLOBALLY
-                        </div>
-                    </div>
+                                </tr>
+                            ))}
+                        </thead>
+                        <tbody className="divide-y divide-gray-50">
+                            {loading ? (
+                                <tr><td colSpan={columns.length} className="px-6 py-12 text-center text-gray-400 text-[10px] font-black uppercase tracking-widest animate-pulse">Memuat Staff...</td></tr>
+                            ) : staffList.length === 0 ? (
+                                <tr><td colSpan={columns.length} className="px-6 py-12 text-center text-gray-300 text-[10px] font-black uppercase tracking-widest">Tidak ada staff ditemukan</td></tr>
+                            ) : (
+                                table.getRowModel().rows.map(row => (
+                                    <tr key={row.id} className="hover:bg-gray-50 transition-colors">
+                                        {row.getVisibleCells().map(cell => (
+                                            <td key={cell.id} className="px-6 py-2.5">
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
+
+            {/* MODAL ADD/EDIT STAFF */}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white shadow-2xl w-full max-w-md overflow-hidden rounded animate-in zoom-in-95 duration-200">
+                        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
+                            <div>
+                                <h3 className="font-black text-gray-800 uppercase tracking-tight text-sm">{editingStaff ? 'Edit Data Staff' : 'Tambah Staff Baru'}</h3>
+                                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Konfigurasi Akses Sistem</p>
+                            </div>
+                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-2"><X size={20} /></button>
+                        </div>
+                        <form onSubmit={handleSubmit} className="p-8 space-y-6 bg-gray-50/30">
+                            <div className="space-y-4">
+                                <div className="space-y-1">
+                                    <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Nama Lengkap</label>
+                                    <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-xs font-bold uppercase outline-none focus:border-admin-primary shadow-sm" required />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Alamat Email</label>
+                                    <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-xs font-bold outline-none focus:border-admin-primary shadow-sm" required />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Kata Sandi {editingStaff && '(Kosongkan jika tetap)'}</label>
+                                    <div className="relative">
+                                        <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                                        <input type="password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full pl-10 pr-3 py-2.5 bg-white border border-gray-200 rounded text-xs font-bold outline-none focus:border-admin-primary shadow-sm" required={!editingStaff} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Pilih Role (Multi-Role)</label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {roles.map(role => (
+                                        <button
+                                            key={role.id}
+                                            type="button"
+                                            onClick={() => toggleRole(role.name)}
+                                            className={cn(
+                                                "flex items-center gap-2 px-3 py-2.5 rounded border text-left transition-all",
+                                                formData.roles.includes(role.name) 
+                                                    ? "bg-admin-primary/10 border-admin-primary text-admin-primary shadow-sm" 
+                                                    : "bg-white border-gray-100 text-gray-500 hover:border-gray-200"
+                                            )}
+                                        >
+                                            <div className={cn("w-3.5 h-3.5 rounded-sm border flex items-center justify-center", formData.roles.includes(role.name) ? "bg-admin-primary border-admin-primary text-white" : "bg-gray-100 border-gray-200")}>
+                                                {formData.roles.includes(role.name) && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                                            </div>
+                                            <span className="text-[10px] font-black uppercase tracking-tight truncate">{role.name}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 pt-4 border-t border-gray-100">
+                                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 text-[10px] font-black text-gray-400 hover:bg-gray-100 rounded transition-colors uppercase tracking-widest">Batal</button>
+                                <button type="submit" className="flex-[2] py-3 bg-admin-primary text-white text-[10px] font-black uppercase tracking-widest rounded shadow-lg shadow-admin-primary/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+                                    <Save size={16} />
+                                    {editingStaff ? 'Simpan Perubahan' : 'Daftarkan Staff'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

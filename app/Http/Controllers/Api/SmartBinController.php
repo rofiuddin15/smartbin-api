@@ -82,7 +82,7 @@ class SmartBinController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
+                'message' => 'Kesalahan validasi data',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -103,7 +103,7 @@ class SmartBinController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Smart bin registered successfully',
+            'message' => 'SmartBin berhasil didaftarkan',
             'data' => $smartBin
         ], 201);
     }
@@ -118,7 +118,7 @@ class SmartBinController extends Controller
         if (!$bin) {
             return response()->json([
                 'success' => false,
-                'message' => 'Smart bin not found'
+                'message' => 'SmartBin tidak ditemukan'
             ], 404);
         }
 
@@ -137,7 +137,7 @@ class SmartBinController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
+                'message' => 'Kesalahan validasi data',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -152,7 +152,7 @@ class SmartBinController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Smart bin updated successfully',
+            'message' => 'Data SmartBin berhasil diperbarui',
             'data' => $bin
         ], 200);
     }
@@ -167,7 +167,7 @@ class SmartBinController extends Controller
         if (!$bin) {
             return response()->json([
                 'success' => false,
-                'message' => 'Smart bin not found'
+                'message' => 'SmartBin tidak ditemukan'
             ], 404);
         }
 
@@ -175,7 +175,7 @@ class SmartBinController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Smart bin deleted successfully'
+            'message' => 'SmartBin berhasil dihapus'
         ], 200);
     }
 
@@ -189,7 +189,7 @@ class SmartBinController extends Controller
         if (!$bin) {
             return response()->json([
                 'success' => false,
-                'message' => 'Smart bin not found'
+                'message' => 'SmartBin tidak ditemukan'
             ], 404);
         }
 
@@ -212,7 +212,7 @@ class SmartBinController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
+                'message' => 'Kesalahan validasi data',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -222,7 +222,7 @@ class SmartBinController extends Controller
         if (!$bin) {
             return response()->json([
                 'success' => false,
-                'message' => 'Smart bin not found'
+                'message' => 'SmartBin tidak ditemukan'
             ], 404);
         }
 
@@ -243,7 +243,7 @@ class SmartBinController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Smart bin status updated',
+            'message' => 'Status SmartBin berhasil diperbarui',
             'data' => $bin
         ], 200);
     }
@@ -261,7 +261,7 @@ class SmartBinController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
+                'message' => 'Kesalahan validasi data',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -282,7 +282,7 @@ class SmartBinController extends Controller
         if (!$authenticatedUser) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid PIN'
+                'message' => 'PIN tidak valid'
             ], 401);
         }
 
@@ -290,7 +290,7 @@ class SmartBinController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'PIN validated successfully',
+            'message' => 'PIN berhasil divalidasi',
             'data' => [
                 'user' => [
                     'id' => $authenticatedUser->id,
@@ -316,7 +316,7 @@ class SmartBinController extends Controller
         if (!$bin) {
             return response()->json([
                 'success' => false,
-                'message' => 'Smart bin not found'
+                'message' => 'SmartBin tidak ditemukan'
             ], 404);
         }
 
@@ -326,7 +326,7 @@ class SmartBinController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Heartbeat received'
+            'message' => 'Sinyal heartbeat diterima'
         ], 200);
     }
 

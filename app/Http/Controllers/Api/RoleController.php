@@ -21,11 +21,16 @@ class RoleController extends Controller
         return response()->json([
             'success' => true,
             'data' => $roles->map(function ($role) {
+                // Manual count to avoid Spatie config relationship issues
+                $usersCount = \Illuminate\Support\Facades\DB::table('model_has_roles')
+                    ->where('role_id', $role->id)
+                    ->count();
+
                 return [
                     'id' => $role->id,
                     'name' => $role->name,
                     'permissions' => $role->permissions->pluck('name'),
-                    'users_count' => $role->users()->count(),
+                    'users_count' => $usersCount,
                     'created_at' => $role->created_at,
                 ];
             })
@@ -42,7 +47,7 @@ class RoleController extends Controller
         if (!$role) {
             return response()->json([
                 'success' => false,
-                'message' => 'Role not found'
+                'message' => 'Role tidak ditemukan'
             ], 404);
         }
 
@@ -52,7 +57,7 @@ class RoleController extends Controller
                 'id' => $role->id,
                 'name' => $role->name,
                 'permissions' => $role->permissions->pluck('name'),
-                'users' => $role->users()->get(['id', 'name', 'email']),
+                'users' => \App\Models\User::role($role->name)->get(['id', 'name', 'email']),
                 'created_at' => $role->created_at,
             ]
         ], 200);
@@ -72,7 +77,7 @@ class RoleController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
+                'message' => 'Kesalahan validasi data',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -85,7 +90,7 @@ class RoleController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Role created successfully',
+            'message' => 'Role berhasil dibuat',
             'data' => [
                 'id' => $role->id,
                 'name' => $role->name,
@@ -104,7 +109,7 @@ class RoleController extends Controller
         if (!$role) {
             return response()->json([
                 'success' => false,
-                'message' => 'Role not found'
+                'message' => 'Role tidak ditemukan'
             ], 404);
         }
 
@@ -117,7 +122,7 @@ class RoleController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
+                'message' => 'Kesalahan validasi data',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -133,7 +138,7 @@ class RoleController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Role updated successfully',
+            'message' => 'Role berhasil diperbarui',
             'data' => [
                 'id' => $role->id,
                 'name' => $role->name,
@@ -152,7 +157,7 @@ class RoleController extends Controller
         if (!$role) {
             return response()->json([
                 'success' => false,
-                'message' => 'Role not found'
+                'message' => 'Role tidak ditemukan'
             ], 404);
         }
 
@@ -160,7 +165,7 @@ class RoleController extends Controller
         if (in_array($role->name, ['admin', 'user', 'operator'])) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cannot delete default system roles'
+                'message' => 'Tidak dapat menghapus Role sistem utama'
             ], 403);
         }
 
@@ -168,7 +173,7 @@ class RoleController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Role deleted successfully'
+            'message' => 'Role berhasil dihapus'
         ], 200);
     }
 
@@ -204,7 +209,7 @@ class RoleController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
+                'message' => 'Kesalahan validasi data',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -214,7 +219,7 @@ class RoleController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Role assigned to user successfully',
+            'message' => 'Role berhasil ditetapkan ke pengguna',
             'data' => [
                 'user' => [
                     'id' => $user->id,
@@ -239,7 +244,7 @@ class RoleController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
+                'message' => 'Kesalahan validasi data',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -249,7 +254,7 @@ class RoleController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Role removed from user successfully',
+            'message' => 'Role berhasil dicabut dari pengguna',
             'data' => [
                 'user' => [
                     'id' => $user->id,
@@ -275,7 +280,7 @@ class RoleController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
+                'message' => 'Kesalahan validasi data',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -285,7 +290,7 @@ class RoleController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'User roles synchronized successfully',
+            'message' => 'Role pengguna berhasil disinkronisasi',
             'data' => [
                 'user' => [
                     'id' => $user->id,

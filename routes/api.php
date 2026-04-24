@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\SmartBinController;
 use App\Http\Controllers\Api\RedeemController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\UserManagementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +53,29 @@ Route::prefix('v1')->group(function () {
     Route::get('/dashboard/stats', [DashboardController::class, 'index']);
     Route::get('/users', [UserController::class, 'index']);
     Route::apiResource('smart-bins', SmartBinController::class);
+
+    // User Management for Admin
+    Route::prefix('admin/users')->group(function () {
+        Route::get('/', [UserManagementController::class, 'index']);
+        Route::get('/{id}', [UserManagementController::class, 'show']);
+        Route::put('/{id}/status', [UserManagementController::class, 'updateStatus']);
+        Route::post('/bulk-status', [UserManagementController::class, 'bulkUpdateStatus']);
+    });
+
+    // Role management routes (Moved here for development access)
+    Route::prefix('roles')->group(function () {
+        Route::get('/', [RoleController::class, 'index']);
+        Route::get('/permissions', [RoleController::class, 'getPermissions']);
+        Route::get('/{id}', [RoleController::class, 'show']);
+        Route::post('/', [RoleController::class, 'store']);
+        Route::put('/{id}', [RoleController::class, 'update']);
+        Route::delete('/{id}', [RoleController::class, 'destroy']);
+
+        // User role assignment
+        Route::post('/assign', [RoleController::class, 'assignRoleToUser']);
+        Route::post('/remove', [RoleController::class, 'removeRoleFromUser']);
+        Route::post('/sync', [RoleController::class, 'syncUserRoles']);
+    });
 });
 
 // Protected routes (require authentication)
@@ -87,20 +111,6 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::get('/history', [RedeemController::class, 'redeemHistory']);
     });
 
-    // Role management routes (admin only)
-    Route::prefix('roles')->middleware('role:admin')->group(function () {
-        Route::get('/', [RoleController::class, 'index']);
-        Route::get('/permissions', [RoleController::class, 'getPermissions']);
-        Route::get('/{id}', [RoleController::class, 'show']);
-        Route::post('/', [RoleController::class, 'store']);
-        Route::put('/{id}', [RoleController::class, 'update']);
-        Route::delete('/{id}', [RoleController::class, 'destroy']);
-
-        // User role assignment
-        Route::post('/assign', [RoleController::class, 'assignRoleToUser']);
-        Route::post('/remove', [RoleController::class, 'removeRoleFromUser']);
-        Route::post('/sync', [RoleController::class, 'syncUserRoles']);
-    });
 });
 
 // Health check endpoint
