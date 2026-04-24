@@ -97,7 +97,7 @@ npm run dev
 Agar peta pada menu **Perangkat IoT** dapat muncul, pastikan Anda telah menyetel token Mapbox di file `.env`:
 
 ```env
-VITE_MAPBOX_TOKEN=your_mapbox_public_token_here
+VITE_MAPBOX_TOKEN=pk.eyJ1Ijoicm9maWFyZWl2IiwiYSI6ImNsYW9xdHZ4cTB1OWYzcW1xaGVzZm84MGEifQ.xmNfOLtRRRWjk_skQzrR8A
 ```
 *Catatan: Jika Anda menggunakan token sendiri, pastikan domain `localhost` sudah diizinkan di dashboard Mapbox Anda.*
 
