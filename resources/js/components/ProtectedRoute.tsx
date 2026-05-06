@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
 const ProtectedRoute: React.FC = () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('smartbin_admin_token');
     const isAuthenticated = !!token && token !== 'null' && token !== 'undefined' && token !== '';
 
     console.log('[AuthCheck] Token:', token);

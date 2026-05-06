@@ -10,7 +10,7 @@ const api = axios.create({
 
 // Interceptor to add auth token if exists
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('smartbin_admin_token');
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
@@ -22,8 +22,8 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response && error.response.status === 401) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+            localStorage.removeItem('smartbin_admin_token');
+            localStorage.removeItem('smartbin_admin_user');
             // Using window.location.href to force a full reload and redirect
             if (window.location.pathname !== '/login') {
                 window.location.href = '/login';

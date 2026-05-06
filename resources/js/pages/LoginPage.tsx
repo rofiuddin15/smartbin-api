@@ -26,7 +26,7 @@ const LoginPage: React.FC = () => {
 
     // Redirect if already logged in
     React.useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('smartbin_admin_token');
         const isAuthenticated = !!token && token !== 'null' && token !== 'undefined' && token !== '';
         
         if (isAuthenticated) {
@@ -43,8 +43,8 @@ const LoginPage: React.FC = () => {
             const response = await api.post('/auth/login', { email, password });
             const { access_token, user } = response.data.data;
 
-            localStorage.setItem('token', access_token);
-            localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('smartbin_admin_token', access_token);
+            localStorage.setItem('smartbin_admin_user', JSON.stringify(user));
 
             // Redirect to dashboard
             navigate('/');

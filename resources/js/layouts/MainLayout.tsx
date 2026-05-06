@@ -40,7 +40,7 @@ const MainLayout: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const user = JSON.parse(localStorage.getItem('smartbin_admin_user') || '{}');
 
     const handleLogout = async () => {
         try {
@@ -49,8 +49,8 @@ const MainLayout: React.FC = () => {
         } catch (err) {
             console.error('Logout error:', err);
         } finally {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+            localStorage.removeItem('smartbin_admin_token');
+            localStorage.removeItem('smartbin_admin_user');
             navigate('/login');
         }
     };
