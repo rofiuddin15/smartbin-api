@@ -16,10 +16,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seed roles and permissions first
+        // Seed roles and permissions first (Using consolidated RolePermissionSeeder)
         $this->call([
-            PermissionSeeder::class,
             RoleSeeder::class,
+            RolePermissionSeeder::class,
         ]);
 
         // Create test users
