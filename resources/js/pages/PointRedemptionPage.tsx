@@ -206,11 +206,11 @@ const PointRedemptionPage: React.FC = () => {
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-3">
                                                         <div className="w-8 h-8 rounded bg-gray-100 flex items-center justify-center text-[11px] font-black text-gray-400 border border-gray-200 uppercase tracking-tighter">
-                                                            {req.ewallet_type.substring(0, 3)}
+                                                            {(req.ewallet_type || 'N/A').substring(0, 3)}
                                                         </div>
                                                         <div className="flex flex-col">
-                                                            <span className="text-[12px] font-black text-gray-800 uppercase">{req.ewallet_type}</span>
-                                                            <span className="text-[12px] font-bold text-gray-400 font-mono tracking-wider">{req.ewallet_account}</span>
+                                                            <span className="text-[12px] font-black text-gray-800 uppercase">{req.ewallet_type || 'Unknown'}</span>
+                                                            <span className="text-[12px] font-bold text-gray-400 font-mono tracking-wider">{req.ewallet_account || '-'}</span>
                                                         </div>
                                                     </div>
                                                 </td>
