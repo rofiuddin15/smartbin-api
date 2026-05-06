@@ -21,8 +21,11 @@ class DashboardController extends Controller
         $totalParticipants = User::count();
 
         // Chart Data: Waste Collection Trends (Last 7 months)
+        $driver = DB::getDriverName();
+        $dateFunc = $driver === 'sqlite' ? "strftime('%m', created_at)" : "DATE_FORMAT(created_at, '%m')";
+
         $trends = Transaction::select(
-            DB::raw('DATE_FORMAT(created_at, "%m") as month'),
+            DB::raw("$dateFunc as month"),
             DB::raw('SUM(CASE WHEN type = "deposit" THEN bottles_count ELSE 0 END) as bottles')
         )
         ->where('created_at', '>=', Carbon::now()->subMonths(7))
