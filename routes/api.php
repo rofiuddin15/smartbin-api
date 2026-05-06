@@ -31,6 +31,12 @@ Route::prefix('v1')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
         Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+        
+        Route::middleware('auth:api')->group(function () {
+            Route::get('/me', [AuthController::class, 'me']);
+            Route::post('/refresh', [AuthController::class, 'refresh']);
+            Route::post('/logout', [AuthController::class, 'logout']);
+        });
     });
 
     // Smart Bin public routes
@@ -52,6 +58,8 @@ Route::prefix('v1')->group(function () {
     // Admin routes
     Route::get('/dashboard/stats', [DashboardController::class, 'index']);
     Route::get('/users', [UserController::class, 'index']);
+    Route::post('/users', [UserController::class, 'store']);
+    Route::put('/users/{id}', [UserController::class, 'update']);
     Route::apiResource('smart-bins', SmartBinController::class);
 
     // User Management for Admin
@@ -94,10 +102,9 @@ Route::prefix('v1')->group(function () {
 });
 
 // Protected routes (require authentication)
-Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
+Route::prefix('v1')->middleware('auth:api')->group(function () {
 
-    // Auth routes (authenticated)
-    Route::post('/auth/logout', [AuthController::class, 'logout']);
+    // Profile is already covered by /me in auth prefix, but keeping consistency
 
     // User profile routes
     Route::prefix('user')->group(function () {

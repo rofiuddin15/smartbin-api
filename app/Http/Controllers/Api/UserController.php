@@ -15,13 +15,98 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        // For admin dashboard, list all users
-        // You might want to add pagination later: User::paginate(10)
-        $users = User::all();
+        // For admin dashboard, list all users with roles
+        $users = User::with('roles')->get();
 
         return response()->json([
             'success' => true,
             'data' => $users
+        ], 200);
+    }
+
+    /**
+     * Store a new user
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'phone_number' => 'nullable|string|unique:users',
+            'ktp_id' => 'nullable|string|unique:users',
+            'address' => 'nullable|string',
+            'pin' => 'nullable|string|min:4|max:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'phone_number' => $request->phone_number,
+            'ktp_id' => $request->ktp_id,
+            'address' => $request->address,
+            'pin' => $request->pin ? Hash::make($request->pin) : null,
+            'status' => 'active',
+            'is_verified' => true,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User created successfully',
+            'data' => $user
+        ], 201);
+    }
+
+    /**
+     * Update an existing user
+     */
+    public function update(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
+            'password' => 'sometimes|nullable|string|min:8',
+            'phone_number' => 'sometimes|nullable|string|unique:users,phone_number,' . $id,
+            'ktp_id' => 'sometimes|nullable|string|unique:users,ktp_id,' . $id,
+            'address' => 'sometimes|nullable|string',
+            'pin' => 'sometimes|nullable|string|min:4|max:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $data = $request->only(['name', 'email', 'phone_number', 'ktp_id', 'address']);
+        
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+        
+        if ($request->filled('pin')) {
+            $data['pin'] = Hash::make($request->pin);
+        }
+
+        $user->update($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User updated successfully',
+            'data' => $user
         ], 200);
     }
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { 
     LayoutDashboard, 
     Users, 
@@ -38,6 +38,22 @@ const SidebarItem = ({ to, icon: Icon, label, active }: { to: string, icon: any,
 const MainLayout: React.FC = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(true);
     const location = useLocation();
+    const navigate = useNavigate();
+    
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+    const handleLogout = async () => {
+        try {
+            const api = (await import('../utils/api')).default;
+            await api.post('/auth/logout');
+        } catch (err) {
+            console.error('Logout error:', err);
+        } finally {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            navigate('/login');
+        }
+    };
 
     return (
         <div className="flex h-screen overflow-hidden bg-gray-100">
@@ -60,11 +76,11 @@ const MainLayout: React.FC = () => {
 
                 {/* User Section */}
                 <div className="p-4 flex items-center border-b border-gray-700">
-                    <div className="w-10 h-10 rounded bg-gray-600 flex items-center justify-center text-xl font-bold mr-3 border border-gray-500">
-                        A
+                    <div className="w-10 h-10 rounded bg-gray-600 flex items-center justify-center text-xl font-bold mr-3 border border-gray-500 uppercase">
+                        {user.name?.charAt(0) || 'A'}
                     </div>
                     <div className={cn("transition-opacity", !isSidebarOpen && "md:opacity-0")}>
-                        <p className="text-base font-semibold truncate">Super Admin</p>
+                        <p className="text-base font-semibold truncate">{user.name || 'Admin'}</p>
                         <p className="text-[12px] text-green-400 font-bold uppercase tracking-widest flex items-center gap-1">
                             <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
                             Online
@@ -156,7 +172,10 @@ const MainLayout: React.FC = () => {
                             <Maximize2 size={18} />
                         </button>
                         <div className="h-8 w-px bg-gray-200 mx-1"></div>
-                        <button className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded transition-colors text-red-600 group">
+                        <button 
+                            onClick={handleLogout}
+                            className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded transition-colors text-red-600 group"
+                        >
                             <LogOut size={18} />
                             <span className="text-base font-bold hidden md:block">Keluar</span>
                         </button>

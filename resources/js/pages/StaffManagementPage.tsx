@@ -32,6 +32,10 @@ interface Staff {
     id: number;
     name: string;
     email: string;
+    phone_number?: string;
+    ktp_id?: string;
+    address?: string;
+    pin?: string;
     roles: string[];
     status: 'active' | 'suspended';
     created_at: string;
@@ -51,6 +55,10 @@ const StaffManagementPage: React.FC = () => {
         name: '',
         email: '',
         password: '',
+        phone_number: '',
+        ktp_id: '',
+        address: '',
+        pin: '',
         roles: [] as string[]
     });
 
@@ -71,11 +79,24 @@ const StaffManagementPage: React.FC = () => {
                 name: staff.name,
                 email: staff.email,
                 password: '',
+                phone_number: staff.phone_number || '',
+                ktp_id: staff.ktp_id || '',
+                address: staff.address || '',
+                pin: '',
                 roles: staff.roles
             });
         } else {
             setEditingStaff(null);
-            setFormData({ name: '', email: '', password: '', roles: [] });
+            setFormData({ 
+                name: '', 
+                email: '', 
+                password: '', 
+                phone_number: '',
+                ktp_id: '',
+                address: '',
+                pin: '',
+                roles: [] 
+            });
         }
         setIsModalOpen(true);
     };
@@ -84,18 +105,24 @@ const StaffManagementPage: React.FC = () => {
         e.preventDefault();
         try {
             const api = (await import('../utils/api')).default;
+            const staffData = {
+                name: formData.name,
+                email: formData.email,
+                phone_number: formData.phone_number,
+                ktp_id: formData.ktp_id,
+                address: formData.address,
+                ...(formData.password ? { password: formData.password } : {}),
+                ...(formData.pin ? { pin: formData.pin } : {})
+            };
+
             if (editingStaff) {
-                await api.put(`/users/${editingStaff.id}`, {
-                    name: formData.name,
-                    email: formData.email,
-                    ...(formData.password ? { password: formData.password } : {})
-                });
+                await api.put(`/users/${editingStaff.id}`, staffData);
                 await api.post('/roles/sync', {
                     user_id: editingStaff.id,
                     roles: formData.roles
                 });
             } else {
-                const response = await api.post('/users', formData);
+                const response = await api.post('/users', staffData);
                 const newUserId = response.data.data.id;
                 await api.post('/roles/sync', {
                     user_id: newUserId,
@@ -267,7 +294,7 @@ const StaffManagementPage: React.FC = () => {
             {/* MODAL ADD/EDIT STAFF */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white shadow-2xl w-full max-w-md overflow-hidden rounded animate-in zoom-in-95 duration-200">
+                    <div className="bg-white shadow-2xl w-full max-w-2xl overflow-hidden rounded animate-in zoom-in-95 duration-200">
                         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
                             <div>
                                 <h3 className="font-black text-gray-800 uppercase tracking-tight text-base">{editingStaff ? 'Edit Data Staff' : 'Tambah Staff Baru'}</h3>
@@ -275,23 +302,48 @@ const StaffManagementPage: React.FC = () => {
                             </div>
                             <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-2"><X size={20} /></button>
                         </div>
-                        <form onSubmit={handleSubmit} className="p-8 space-y-6 bg-gray-50/30">
-                            <div className="space-y-4">
-                                <div className="space-y-1">
-                                    <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Nama Lengkap</label>
-                                    <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold uppercase outline-none focus:border-admin-primary shadow-sm" required />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Alamat Email</label>
-                                    <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold outline-none focus:border-admin-primary shadow-sm" required />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Kata Sandi {editingStaff && '(Kosongkan jika tetap)'}</label>
-                                    <div className="relative">
-                                        <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                                        <input type="password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full pl-10 pr-3 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold outline-none focus:border-admin-primary shadow-sm" required={!editingStaff} />
+                        <form onSubmit={handleSubmit} className="p-8 space-y-6 bg-gray-50/30 overflow-y-auto max-h-[80vh]">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <div className="space-y-1">
+                                        <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Nama Lengkap</label>
+                                        <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold uppercase outline-none focus:border-admin-primary shadow-sm" required />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Alamat Email</label>
+                                        <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold outline-none focus:border-admin-primary shadow-sm" required />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">No. Telepon</label>
+                                        <input type="text" value={formData.phone_number} onChange={e => setFormData({...formData, phone_number: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold outline-none focus:border-admin-primary shadow-sm" />
                                     </div>
                                 </div>
+
+                                <div className="space-y-4">
+                                    <div className="space-y-1">
+                                        <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">No. KTP (NIK)</label>
+                                        <input type="text" value={formData.ktp_id} onChange={e => setFormData({...formData, ktp_id: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold outline-none focus:border-admin-primary shadow-sm" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">PIN IoT (4-6 Digit)</label>
+                                        <div className="relative">
+                                            <Shield size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                                            <input type="password" value={formData.pin} onChange={e => setFormData({...formData, pin: e.target.value})} className="w-full pl-10 pr-3 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold outline-none focus:border-admin-primary shadow-sm" maxLength={6} />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Kata Sandi Login {editingStaff && '(Kosongkan jika tetap)'}</label>
+                                        <div className="relative">
+                                            <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                                            <input type="password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full pl-10 pr-3 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold outline-none focus:border-admin-primary shadow-sm" required={!editingStaff} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-1">
+                                <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Alamat Tinggal</label>
+                                <textarea value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold outline-none focus:border-admin-primary shadow-sm min-h-[80px]" />
                             </div>
 
                             <div className="space-y-3">
