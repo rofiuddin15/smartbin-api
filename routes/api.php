@@ -70,6 +70,13 @@ Route::prefix('v1')->group(function () {
         Route::post('/ledger', [\App\Http\Controllers\Api\FinanceController::class, 'storeLedger']);
     });
 
+    // Redeem Management for Admin
+    Route::prefix('admin/redeem')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\RedeemManagementController::class, 'index']);
+        Route::get('/stats', [\App\Http\Controllers\Api\RedeemManagementController::class, 'stats']);
+        Route::put('/{id}/status', [\App\Http\Controllers\Api\RedeemManagementController::class, 'updateStatus']);
+    });
+
     // Role management routes (Moved here for development access)
     Route::prefix('roles')->group(function () {
         Route::get('/', [RoleController::class, 'index']);

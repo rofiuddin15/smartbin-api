@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
     {
         // Seed roles and permissions first
         $this->call([
+            PermissionSeeder::class,
             RoleSeeder::class,
         ]);
 
@@ -56,6 +57,9 @@ class DatabaseSeeder extends Seeder
         // Call SmartBin seeder
         $this->call([
             SmartBinSeeder::class,
+            FinanceAndSettingSeeder::class,
+            TransactionSeeder::class,
+            RedemptionSeeder::class,
         ]);
     }
 }
