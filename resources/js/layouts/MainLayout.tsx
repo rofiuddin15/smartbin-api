@@ -140,7 +140,7 @@ const MainLayout: React.FC = () => {
                         <nav className="hidden md:flex items-center gap-4">
                             <Link to="/" className="text-base text-gray-600 hover:text-admin-primary font-medium">Beranda</Link>
                             <span className="text-gray-300">/</span>
-                            <span className="text-base text-gray-400 capitalize">{location.pathname.substring(1) || 'Dashboard'}</span>
+                            <span className="text-base text-gray-400 capitalize">{(location.pathname || '').substring(1) || 'Dashboard'}</span>
                         </nav>
                     </div>
 
