@@ -18,7 +18,6 @@ class DatabaseSeeder extends Seeder
     {
         // Seed roles and permissions first (Using consolidated RolePermissionSeeder)
         $this->call([
-            RoleSeeder::class,
             RolePermissionSeeder::class,
         ]);
 
