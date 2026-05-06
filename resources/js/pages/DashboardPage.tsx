@@ -129,7 +129,7 @@ const DashboardPage: React.FC = () => {
                     <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
                         <h3 className="text-[12px] font-black text-gray-400 uppercase tracking-widest">Tren Pengumpulan Sampah</h3>
                     </div>
-                    <div className="p-4 h-[300px]">
+                    <div className="p-4 h-[300px] min-w-0">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={stats.chart_data}>
                                 <defs>
@@ -144,7 +144,7 @@ const DashboardPage: React.FC = () => {
                                 <Tooltip 
                                     contentStyle={{ borderRadius: '4px', border: '1px solid #eee', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 'bold' }}
                                 />
-                                <Area type="monotone" dataKey="botol" stroke="#007bff" strokeWidth={3} fillOpacity={1} fill="url(#colorOrganic)" />
+                                <Area type="monotone" dataKey="bottles" stroke="#007bff" strokeWidth={3} fillOpacity={1} fill="url(#colorOrganic)" />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
@@ -155,14 +155,14 @@ const DashboardPage: React.FC = () => {
                     <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
                         <h3 className="text-[12px] font-black text-gray-400 uppercase tracking-widest">Partisipasi Daur Ulang</h3>
                     </div>
-                    <div className="p-4 h-[300px]">
+                    <div className="p-4 h-[300px] min-w-0">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={stats.chart_data}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f1f1" />
                                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 'bold', fill: '#999'}} />
                                 <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 'bold', fill: '#999'}} />
                                 <Tooltip cursor={{fill: '#f8f9fa'}} contentStyle={{borderRadius: '4px', border: '1px solid #eee', fontSize: '12px', fontWeight: 'bold'}} />
-                                <Bar dataKey="botol" fill="#17a2b8" radius={[2, 2, 0, 0]} />
+                                <Bar dataKey="bottles" fill="#17a2b8" radius={[2, 2, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>

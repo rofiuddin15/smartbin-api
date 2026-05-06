@@ -28,6 +28,11 @@ interface Role {
     name: string;
 }
 
+interface Role {
+    id: number;
+    name: string;
+}
+
 interface Staff {
     id: number;
     name: string;
@@ -36,7 +41,7 @@ interface Staff {
     ktp_id?: string;
     address?: string;
     pin?: string;
-    roles: string[];
+    roles: Role[];
     status: 'active' | 'suspended';
     created_at: string;
 }
@@ -83,7 +88,7 @@ const StaffManagementPage: React.FC = () => {
                 ktp_id: staff.ktp_id || '',
                 address: staff.address || '',
                 pin: '',
-                roles: staff.roles
+                roles: staff.roles.map((r: any) => typeof r === 'object' ? r.name : r)
             });
         } else {
             setEditingStaff(null);
@@ -183,9 +188,9 @@ const StaffManagementPage: React.FC = () => {
             header: 'Peran / Role',
             cell: info => (
                 <div className="flex flex-wrap gap-1">
-                    {info.getValue().length > 0 ? info.getValue().map(role => (
-                        <span key={role} className="px-2 py-0.5 rounded bg-admin-primary/10 text-admin-primary border border-admin-primary/20 text-[11px] font-black uppercase tracking-tighter shadow-sm">
-                            {role}
+                    {info.getValue().length > 0 ? info.getValue().map((role: any) => (
+                        <span key={typeof role === 'object' ? role.id : role} className="px-2 py-0.5 rounded bg-admin-primary/10 text-admin-primary border border-admin-primary/20 text-[11px] font-black uppercase tracking-tighter shadow-sm">
+                            {typeof role === 'object' ? role.name : role}
                         </span>
                     )) : <span className="text-[11px] text-gray-300 font-bold italic">Tanpa Role</span>}
                 </div>
