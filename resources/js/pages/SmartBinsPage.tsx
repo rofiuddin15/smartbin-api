@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Trash2, MapPin, Signal, Battery, AlertTriangle, Search, Plus, Users, LayoutGrid, Map as MapIcon, X, User, ShieldAlert, Lock, Save } from 'lucide-react';
+import { Trash2, MapPin, Signal, Battery, AlertTriangle, Search, Plus, Users, LayoutGrid, Map as MapIcon, X, User, ShieldAlert, Lock, Save, Loader2 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useSelector, useDispatch } from 'react-redux';
@@ -34,6 +34,12 @@ interface SmartBin {
     last_online_at: string;
 }
 
+interface StaffUser {
+    id: number;
+    name: string;
+    email: string;
+}
+
 const SmartBinsPage: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { bins, loading, error } = useSelector((state: RootState) => state.smartBins);
@@ -45,6 +51,9 @@ const SmartBinsPage: React.FC = () => {
     const mapContainer = useRef<HTMLDivElement>(null);
     const map = useRef<mapboxgl.Map | null>(null);
     
+    const [staffUsers, setStaffUsers] = useState<StaffUser[]>([]);
+    const [loadingUsers, setLoadingUsers] = useState(false);
+
     // For Map Picker in Modal
     const [formData, setFormData] = useState({
         bin_code: '',
@@ -62,7 +71,22 @@ const SmartBinsPage: React.FC = () => {
 
     useEffect(() => {
         dispatch(fetchBins());
+        fetchStaffUsers();
     }, [dispatch]);
+
+    const fetchStaffUsers = async () => {
+        try {
+            setLoadingUsers(true);
+            const response = await api.get('/users'); // Using UserController@index
+            if (response.data.success) {
+                setStaffUsers(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching staff users:', error);
+        } finally {
+            setLoadingUsers(false);
+        }
+    };
 
     useEffect(() => {
         if (viewMode === 'map' && bins.length > 0 && !loading) {
@@ -437,8 +461,26 @@ const SmartBinsPage: React.FC = () => {
                                             <div className="space-y-1.5">
                                                 <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Penanggung Jawab (PIC)</label>
                                                 <div className="relative">
-                                                    <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                                                    <input type="text" value={formData.responsible_person} onChange={(e) => setFormData({...formData, responsible_person: e.target.value})} className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold uppercase outline-none focus:border-admin-primary" required />
+                                                    <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" />
+                                                    <select 
+                                                        value={formData.responsible_person} 
+                                                        onChange={(e) => setFormData({...formData, responsible_person: e.target.value})} 
+                                                        className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold uppercase outline-none focus:border-admin-primary appearance-none" 
+                                                        required
+                                                    >
+                                                        <option value="">Pilih Penanggung Jawab</option>
+                                                        {loadingUsers ? (
+                                                            <option disabled>Memuat daftar staff...</option>
+                                                        ) : (
+                                                            staffUsers.map(u => (
+                                                                <option key={u.id} value={u.name}>{u.name}</option>
+                                                            ))
+                                                        )}
+                                                        <option value="Manual Entry" disabled>--- ATAU KETIK MANUAL ---</option>
+                                                    </select>
+                                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                                        <Search size={14} className="text-gray-400" />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

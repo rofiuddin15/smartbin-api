@@ -13,12 +13,15 @@ class SmartBinSeeder extends Seeder
      */
     public function run(): void
     {
+        $users = \App\Models\User::all();
+        $staffCount = $users->count();
+
         $bins = [
             [
                 'bin_code' => 'SB001',
                 'name' => 'Smart Bin - Arek Lancor',
                 'location' => 'Pusat Kota Pamekasan, Jl. Panglima Sudirman',
-                'responsible_person' => 'Bpk. Ahmad Fauzi',
+                'responsible_person' => $staffCount > 0 ? $users->get(0 % $staffCount)->name : 'Bpk. Ahmad Fauzi',
                 'username' => 'arek_lancor_01',
                 'password' => bcrypt('password123'),
                 'latitude' => -7.1574,
@@ -32,7 +35,7 @@ class SmartBinSeeder extends Seeder
                 'bin_code' => 'SB002',
                 'name' => 'Smart Bin - UIM Bettet',
                 'location' => 'Kampus UIM, Bettet, Pamekasan',
-                'responsible_person' => 'Ibu Siti Aminah',
+                'responsible_person' => $staffCount > 0 ? $users->get(1 % $staffCount)->name : 'Ibu Siti Aminah',
                 'username' => 'uim_bettet_02',
                 'password' => bcrypt('password123'),
                 'latitude' => -7.1322,
@@ -46,7 +49,7 @@ class SmartBinSeeder extends Seeder
                 'bin_code' => 'SB003',
                 'name' => 'Smart Bin - IAIN Madura',
                 'location' => 'Kampus IAIN, Panglegur, Pamekasan',
-                'responsible_person' => 'Bpk. Hendra Wijaya',
+                'responsible_person' => $staffCount > 0 ? $users->get(2 % $staffCount)->name : 'Bpk. Hendra Wijaya',
                 'username' => 'iain_madura_03',
                 'password' => bcrypt('password123'),
                 'latitude' => -7.1932,
@@ -60,7 +63,7 @@ class SmartBinSeeder extends Seeder
                 'bin_code' => 'SB004',
                 'name' => 'Smart Bin - RSUD Smart',
                 'location' => 'RSUD Smart, Pamekasan',
-                'responsible_person' => 'Dr. Bambang',
+                'responsible_person' => $staffCount > 0 ? $users->get(3 % $staffCount)->name : 'Dr. Bambang',
                 'username' => 'rsud_smart_04',
                 'password' => bcrypt('password123'),
                 'latitude' => -7.1654,
@@ -74,7 +77,7 @@ class SmartBinSeeder extends Seeder
                 'bin_code' => 'SB005',
                 'name' => 'Smart Bin - Terminal Pamekasan',
                 'location' => 'Terminal Bus Pamekasan, Ceguk',
-                'responsible_person' => 'Bpk. Yusuf',
+                'responsible_person' => $staffCount > 0 ? $users->get(4 % $staffCount)->name : 'Bpk. Yusuf',
                 'username' => 'terminal_pmk_05',
                 'password' => bcrypt('password123'),
                 'latitude' => -7.2001,
