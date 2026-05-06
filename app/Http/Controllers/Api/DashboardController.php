@@ -22,7 +22,7 @@ class DashboardController extends Controller
 
         // Chart Data: Waste Collection Trends (Last 7 months)
         $trends = Transaction::select(
-            DB::raw('strftime("%m", created_at) as month'),
+            DB::raw('DATE_FORMAT(created_at, "%m") as month'),
             DB::raw('SUM(CASE WHEN type = "deposit" THEN bottles_count ELSE 0 END) as bottles')
         )
         ->where('created_at', '>=', Carbon::now()->subMonths(7))
