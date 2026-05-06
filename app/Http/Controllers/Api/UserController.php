@@ -15,8 +15,10 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        // For admin dashboard, list all users with roles
-        $users = User::with('roles')->get();
+        // List only staff members (exclude users with 'user' role)
+        $users = User::whereDoesntHave('roles', function($q) {
+            $q->where('name', 'user');
+        })->with('roles')->get();
 
         return response()->json([
             'success' => true,

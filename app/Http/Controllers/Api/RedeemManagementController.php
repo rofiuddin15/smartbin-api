@@ -17,6 +17,11 @@ class RedeemManagementController extends Controller
     public function index(Request $request)
     {
         $query = Transaction::where('type', 'redeem')
+            ->whereHas('user', function($q) {
+                $q->whereDoesntHave('roles', function($rq) {
+                    $rq->whereIn('name', ['admin', 'operator', 'finance']);
+                });
+            })
             ->with('user:id,name,email,phone_number');
 
         // Filter by status

@@ -12,24 +12,23 @@ class TransactionSeeder extends Seeder
 {
     public function run(): void
     {
-        $users = User::all();
+        $users = User::role('user')->where('status', 'active')->get();
         $bins = SmartBin::all();
 
         if ($users->isEmpty() || $bins->isEmpty()) {
             return;
         }
 
-        // Create 50 random transactions over the last 6 months
+        // Create 50 random deposit transactions over the last 6 months
         for ($i = 0; $i < 50; $i++) {
-            $type = rand(0, 10) > 2 ? 'deposit' : 'redeem';
             $date = Carbon::now()->subDays(rand(0, 180));
             
             Transaction::create([
                 'user_id' => $users->random()->id,
-                'smart_bin_id' => $type === 'deposit' ? $bins->random()->id : null,
-                'type' => $type,
-                'points' => $type === 'deposit' ? rand(50, 500) : rand(100, 1000),
-                'bottles_count' => $type === 'deposit' ? rand(5, 50) : 0,
+                'smart_bin_id' => $bins->random()->id,
+                'type' => 'deposit',
+                'points' => rand(50, 500),
+                'bottles_count' => rand(5, 50),
                 'status' => 'completed',
                 'created_at' => $date,
                 'updated_at' => $date,

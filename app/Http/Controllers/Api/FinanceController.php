@@ -147,7 +147,7 @@ class FinanceController extends Controller
     {
         $request->validate([
             'type' => 'required|string|in:income,expense',
-            'category' => 'required|string|in:deposit,redeem,capital,operational,maintenance,other',
+            'category' => 'required|string|in:deposit,redeem,capital,operational,maintenance,waste_sale,admin_fee,other',
             'amount' => 'required|numeric|min:0.01',
             'description' => 'required|string|max:255',
         ]);
@@ -228,7 +228,7 @@ class FinanceController extends Controller
                 
                 fputcsv($file, [
                     'TRX-' . str_pad($t->id, 5, '0', STR_PAD_LEFT),
-                    $isDeposit ? 'Pemasukan/Aset' : 'Pengeluaran/Redeem',
+                    $isDeposit ? 'Tabungan Member (Aset)' : 'Penarikan/Payout',
                     $t->user->name ?? 'System',
                     $t->description ?? ($isDeposit ? 'Setoran Sampah' : 'Pencairan Poin'),
                     round($nominal),
@@ -239,7 +239,7 @@ class FinanceController extends Controller
             foreach ($ledgers as $l) {
                 fputcsv($file, [
                     'LDG-' . str_pad($l->id, 5, '0', STR_PAD_LEFT),
-                    $l->type === 'income' ? 'Pemasukan/Modal' : 'Pengeluaran Manual',
+                    $l->type === 'income' ? 'Pemasukan Kas (Realized)' : 'Biaya/Pengeluaran Manual',
                     'Admin',
                     $l->description,
                     round($l->amount),
@@ -251,5 +251,83 @@ class FinanceController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function getIncomeList()
+    {
+        $pointRate = Setting::where('key', 'point_to_idr_rate')->value('value') ?? 10;
+        $marginPercent = Setting::where('key', 'revenue_margin_percent')->value('value') ?? 400;
+        $nilaiAsetPerPoin = $pointRate * ($marginPercent / 100);
+
+        $pointIncomes = PointTransaction::with('user')
+            ->where('points_change', '>', 0)
+            ->get()
+            ->map(function($pt) use ($nilaiAsetPerPoin) {
+                return [
+                    'id' => 'TRX-' . str_pad($pt->id, 5, '0', STR_PAD_LEFT),
+                    'type' => 'income',
+                    'category' => 'deposit',
+                    'amount' => abs($pt->points_change) * $nilaiAsetPerPoin,
+                    'description' => $pt->description ?? 'Setoran Sampah',
+                    'entity_name' => $pt->user->name ?? 'System',
+                    'created_at' => $pt->created_at->toISOString(),
+                ];
+            });
+
+        $manualIncomes = FinanceLedger::where('type', 'income')
+            ->get()
+            ->map(function($l) {
+                return [
+                    'id' => 'LDG-' . str_pad($l->id, 5, '0', STR_PAD_LEFT),
+                    'type' => 'income',
+                    'category' => $l->category,
+                    'amount' => (float)$l->amount,
+                    'description' => $l->description,
+                    'entity_name' => 'Admin',
+                    'created_at' => $l->created_at->toISOString(),
+                ];
+            });
+
+        $combined = $pointIncomes->concat($manualIncomes)->sortByDesc('created_at')->values();
+        
+        return response()->json(['success' => true, 'data' => $combined]);
+    }
+
+    public function getExpenseList()
+    {
+        $pointRate = Setting::where('key', 'point_to_idr_rate')->value('value') ?? 10;
+
+        $pointExpenses = PointTransaction::with('user')
+            ->where('points_change', '<', 0)
+            ->get()
+            ->map(function($pt) use ($pointRate) {
+                return [
+                    'id' => 'TRX-' . str_pad($pt->id, 5, '0', STR_PAD_LEFT),
+                    'type' => 'expense',
+                    'category' => 'redeem',
+                    'amount' => abs($pt->points_change) * $pointRate,
+                    'description' => $pt->description ?? 'Pencairan Poin',
+                    'entity_name' => $pt->user->name ?? 'System',
+                    'created_at' => $pt->created_at->toISOString(),
+                ];
+            });
+
+        $manualExpenses = FinanceLedger::where('type', 'expense')
+            ->get()
+            ->map(function($l) {
+                return [
+                    'id' => 'LDG-' . str_pad($l->id, 5, '0', STR_PAD_LEFT),
+                    'type' => 'expense',
+                    'category' => $l->category,
+                    'amount' => (float)$l->amount,
+                    'description' => $l->description,
+                    'entity_name' => 'Admin',
+                    'created_at' => $l->created_at->toISOString(),
+                ];
+            });
+
+        $combined = $pointExpenses->concat($manualExpenses)->sortByDesc('created_at')->values();
+        
+        return response()->json(['success' => true, 'data' => $combined]);
     }
 }

@@ -64,6 +64,7 @@ export const fetchUsers = createAsyncThunk(
         });
         
         const userData = response.data.data.data || response.data.data;
+        const stats = response.data.stats;
         const enhancedData = (Array.isArray(userData) ? userData : []).map(u => ({
             ...u,
             address: u.address || 'Alamat belum diatur',
@@ -74,7 +75,7 @@ export const fetchUsers = createAsyncThunk(
             last_login_at: new Date().toISOString()
         }));
 
-        return { users: enhancedData, status, fromCache: false };
+        return { users: enhancedData, status, stats, fromCache: false };
     }
 );
 
@@ -103,12 +104,10 @@ const usersSlice = createSlice({
                 state.users = action.payload.users;
                 if (!action.payload.fromCache) {
                     state.lastFetched[action.payload.status] = Date.now();
+                    if (action.payload.stats) {
+                        state.stats = action.payload.stats;
+                    }
                 }
-                
-                // Update stats based on the fetched data
-                if (action.payload.status === 'pending') state.stats.pending = action.payload.users.length;
-                if (action.payload.status === 'active') state.stats.active = action.payload.users.length;
-                if (action.payload.status === 'suspended') state.stats.suspended = action.payload.users.length;
             })
             .addCase(fetchUsers.rejected, (state, action) => {
                 state.loading = false;

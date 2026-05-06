@@ -73,6 +73,8 @@ Route::prefix('v1')->group(function () {
     // Finance Management for Admin
     Route::prefix('admin/finance')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Api\FinanceController::class, 'getDashboard']);
+        Route::get('/income', [\App\Http\Controllers\Api\FinanceController::class, 'getIncomeList']);
+        Route::get('/expense', [\App\Http\Controllers\Api\FinanceController::class, 'getExpenseList']);
         Route::put('/settings', [\App\Http\Controllers\Api\FinanceController::class, 'updateSettings']);
         Route::get('/export', [\App\Http\Controllers\Api\FinanceController::class, 'exportReport']);
         Route::post('/ledger', [\App\Http\Controllers\Api\FinanceController::class, 'storeLedger']);

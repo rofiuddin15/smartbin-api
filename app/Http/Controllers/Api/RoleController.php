@@ -16,7 +16,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = Role::with('permissions')->get();
+        $roles = Role::where('guard_name', 'api')->with('permissions')->get();
 
         return response()->json([
             'success' => true,
@@ -182,7 +182,7 @@ class RoleController extends Controller
      */
     public function getPermissions()
     {
-        $permissions = Permission::all();
+        $permissions = Permission::where('guard_name', 'api')->get();
 
         return response()->json([
             'success' => true,

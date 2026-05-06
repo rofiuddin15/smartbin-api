@@ -13,7 +13,9 @@ import {
     Maximize2, 
     LogOut,
     ChevronLeft,
-    Shield
+    Shield,
+    TrendingUp,
+    TrendingDown
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -132,6 +134,22 @@ const MainLayout: React.FC = () => {
                         icon={Shield} 
                         label="Hak Akses (Role)" 
                         active={location.pathname === "/roles"} 
+                    />
+                    
+                    <p className={cn("px-4 py-2 mt-4 text-[12px] uppercase font-bold text-gray-500 tracking-wider", !isSidebarOpen && "md:hidden")}>
+                        Keuangan & Akuntansi
+                    </p>
+                    <SidebarItem 
+                        to="/finance/income" 
+                        icon={TrendingUp} 
+                        label="Tabungan Masuk" 
+                        active={location.pathname === "/finance/income"} 
+                    />
+                    <SidebarItem 
+                        to="/finance/expense" 
+                        icon={TrendingDown} 
+                        label="Penarikan Saldo" 
+                        active={location.pathname === "/finance/expense"} 
                     />
                     <SidebarItem 
                         to="/finance" 

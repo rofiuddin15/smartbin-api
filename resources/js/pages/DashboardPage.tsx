@@ -20,6 +20,7 @@ import {
     Bar,
     Legend
 } from 'recharts';
+import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { fetchDashboardStats } from '../store/slices/dashboardSlice';
@@ -31,7 +32,7 @@ function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
-const InfoBox = ({ color, icon: Icon, title, value, linkText }: { color: string, icon: any, title: string, value: string | number, linkText: string }) => (
+const InfoBox = ({ color, icon: Icon, title, value, linkText, to }: { color: string, icon: any, title: string, value: string | number, linkText: string, to: string }) => (
     <div className={`overflow-hidden rounded shadow-sm flex flex-col relative h-full border border-black/5`}>
         <div className={`p-4 flex justify-between items-start ${color} text-white flex-1`}>
             <div>
@@ -40,9 +41,9 @@ const InfoBox = ({ color, icon: Icon, title, value, linkText }: { color: string,
             </div>
             <Icon size={40} className="text-white/20 absolute right-2 top-4" />
         </div>
-        <a href="#" className="bg-black/10 hover:bg-black/20 text-white text-center py-1.5 text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-1 transition-colors shrink-0">
+        <Link to={to} className="bg-black/10 hover:bg-black/20 text-white text-center py-1.5 text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-1 transition-colors shrink-0">
             {linkText} <ArrowRight size={12} />
-        </a>
+        </Link>
     </div>
 );
 
@@ -98,6 +99,7 @@ const DashboardPage: React.FC = () => {
                     title="Sampah Terkumpul (Botol)" 
                     value={stats.stats.trash_collected} 
                     linkText="Lihat Statistik" 
+                    to="/waste"
                 />
                 <InfoBox 
                     color="bg-admin-success" 
@@ -105,6 +107,7 @@ const DashboardPage: React.FC = () => {
                     title="SmartBin IoT Aktif" 
                     value={stats.stats.active_bins} 
                     linkText="Cek Perangkat" 
+                    to="/smart-bins"
                 />
                 <InfoBox 
                     color="bg-admin-warning" 
@@ -112,6 +115,7 @@ const DashboardPage: React.FC = () => {
                     title="Pendaftar Baru" 
                     value={stats.stats.new_users} 
                     linkText="Moderasi User" 
+                    to="/users"
                 />
                 <InfoBox 
                     color="bg-admin-danger" 
@@ -119,6 +123,7 @@ const DashboardPage: React.FC = () => {
                     title="Total Partisipan" 
                     value={stats.stats.total_participants} 
                     linkText="Daftar Lengkap" 
+                    to="/users"
                 />
             </div>
 

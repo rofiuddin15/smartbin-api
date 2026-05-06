@@ -17,31 +17,45 @@ class DashboardController extends Controller
         // Info Box Stats
         $totalBottles = Transaction::sum('bottles_count');
         $activeBins = SmartBin::whereIn('status', ['active', 'online'])->count();
-        $newUsers = User::where('created_at', '>=', Carbon::now()->subDays(30))->count();
-        $totalParticipants = User::count();
+        
+        $participantQuery = User::whereDoesntHave('roles', function($q) {
+            $q->whereIn('name', ['admin', 'operator', 'finance']);
+        });
 
-        // Chart Data: Waste Collection Trends (Last 7 months)
+        $newUsers = (clone $participantQuery)->where('created_at', '>=', Carbon::now()->subDays(30))->count();
+        $totalParticipants = $participantQuery->count();
+
+        // Generate the last 7 months labels
+        $chartData = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $month = Carbon::now()->subMonths($i);
+            $monthKey = $month->format('m');
+            $yearKey = $month->format('Y');
+            $chartData[$yearKey . '-' . $monthKey] = [
+                'name' => $month->format('M'),
+                'bottles' => 0,
+                'sort_key' => $month->format('Y-m')
+            ];
+        }
+
         $driver = DB::getDriverName();
-        $dateFunc = $driver === 'sqlite' ? "strftime('%m', created_at)" : "DATE_FORMAT(created_at, '%m')";
+        $dateFunc = $driver === 'sqlite' ? "strftime('%Y-%m', created_at)" : "DATE_FORMAT(created_at, '%Y-%m')";
 
         $trends = Transaction::select(
-            DB::raw("$dateFunc as month"),
+            DB::raw("$dateFunc as month_year"),
             DB::raw('SUM(CASE WHEN type = "deposit" THEN bottles_count ELSE 0 END) as bottles')
         )
-        ->where('created_at', '>=', Carbon::now()->subMonths(7))
-        ->groupBy('month')
-        ->orderBy('month')
+        ->where('created_at', '>=', Carbon::now()->subMonths(7)->startOfMonth())
+        ->groupBy('month_year')
         ->get();
 
-        // Map months to names for chart
-        $monthNames = ['01' => 'Jan', '02' => 'Feb', '03' => 'Mar', '04' => 'Apr', '05' => 'May', '06' => 'Jun', '07' => 'Jul', '08' => 'Aug', '09' => 'Sep', '10' => 'Oct', '11' => 'Nov', '12' => 'Dec'];
-        
-        $chartData = $trends->map(function($item) use ($monthNames) {
-            return [
-                'name' => $monthNames[$item->month] ?? $item->month,
-                'bottles' => $item->bottles,
-            ];
-        });
+        foreach ($trends as $trend) {
+            if (isset($chartData[$trend->month_year])) {
+                $chartData[$trend->month_year]['bottles'] = (int)$trend->bottles;
+            }
+        }
+
+        $finalChartData = array_values($chartData);
 
         // Recent Transactions
         $recentTransactions = Transaction::with(['user', 'smartBin'])
@@ -61,6 +75,17 @@ class DashboardController extends Controller
                 ];
             });
 
+        // Location Stats
+        $locationStats = Transaction::select(
+            'smart_bins.name as location',
+            DB::raw('SUM(bottles_count) as total_bottles')
+        )
+        ->join('smart_bins', 'transactions.smart_bin_id', '=', 'smart_bins.id')
+        ->where('type', 'deposit')
+        ->groupBy('smart_bins.name')
+        ->orderBy('total_bottles', 'desc')
+        ->get();
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -70,7 +95,8 @@ class DashboardController extends Controller
                     'new_users' => $newUsers,
                     'total_participants' => $totalParticipants,
                 ],
-                'chart_data' => $chartData,
+                'chart_data' => $finalChartData,
+                'location_stats' => $locationStats,
                 'recent_transactions' => $recentTransactions
             ]
         ]);

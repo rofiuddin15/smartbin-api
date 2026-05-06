@@ -11,6 +11,8 @@ interface FinanceState {
     chartData: any[];
     distributionData: any[];
     recentLogs: any[];
+    incomeList: any[];
+    expenseList: any[];
     settings: {
         point_to_idr_rate: number;
         revenue_margin_percent: number;
@@ -29,6 +31,8 @@ const initialState: FinanceState = {
     chartData: [],
     distributionData: [],
     recentLogs: [],
+    incomeList: [],
+    expenseList: [],
     settings: {
         point_to_idr_rate: 10,
         revenue_margin_percent: 400,
@@ -45,6 +49,30 @@ export const fetchFinanceDashboard = createAsyncThunk(
             return response.data.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to fetch finance data');
+        }
+    }
+);
+
+export const fetchIncomeList = createAsyncThunk(
+    'finance/fetchIncomeList',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.get('/admin/finance/income');
+            return response.data.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to fetch income list');
+        }
+    }
+);
+
+export const fetchExpenseList = createAsyncThunk(
+    'finance/fetchExpenseList',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.get('/admin/finance/expense');
+            return response.data.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to fetch expense list');
         }
     }
 );
@@ -94,6 +122,14 @@ const financeSlice = createSlice({
             .addCase(fetchFinanceDashboard.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
+            })
+            .addCase(fetchIncomeList.fulfilled, (state, action) => {
+                state.incomeList = action.payload;
+                state.loading = false;
+            })
+            .addCase(fetchExpenseList.fulfilled, (state, action) => {
+                state.expenseList = action.payload;
+                state.loading = false;
             })
             .addCase(updateFinanceSettings.fulfilled, (state, action) => {
                 state.settings = action.payload;

@@ -14,7 +14,9 @@ class UserManagementController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::query();
+        $query = User::whereDoesntHave('roles', function($q) {
+            $q->whereIn('name', ['admin', 'operator', 'finance']);
+        });
 
         // Search by name or email
         if ($request->has('search')) {
@@ -33,9 +35,21 @@ class UserManagementController extends Controller
 
         $users = $query->latest()->paginate($request->get('per_page', 10));
 
+        // Get counts for each status
+        $baseQuery = User::whereDoesntHave('roles', function($q) {
+            $q->whereIn('name', ['admin', 'operator', 'finance']);
+        });
+
+        $stats = [
+            'pending' => (clone $baseQuery)->where('status', 'pending')->count(),
+            'active' => (clone $baseQuery)->where('status', 'active')->count(),
+            'suspended' => (clone $baseQuery)->where('status', 'suspended')->count(),
+        ];
+
         return response()->json([
             'success' => true,
-            'data' => $users
+            'data' => $users,
+            'stats' => $stats
         ]);
     }
 

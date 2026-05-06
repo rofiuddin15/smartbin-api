@@ -170,33 +170,33 @@ const FinancePage: React.FC = () => {
             {/* Top Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <FinCard 
-                    title="Total Pendapatan Aset" 
+                    title="Estimasi Aset" 
                     value={`Rp ${cards.pendapatan.toLocaleString('id-ID')}`} 
-                    subValue="Estimasi Margin Jual Sampah" 
+                    subValue="Valuasi Sampah di Bin" 
                     icon={TrendingUp} 
                     trend="Aktif" 
                     trendType="up" 
                 />
                 <FinCard 
-                    title="Liabilitas Poin" 
+                    title="Tabungan Member" 
                     value={`Rp ${cards.liabilitas.toLocaleString('id-ID')}`} 
-                    subValue="Total Saldo Member Beredar" 
+                    subValue="Saldo Poin Beredar" 
                     icon={DollarSign} 
                     trend="Tertunda" 
                     trendType="down" 
                 />
                 <FinCard 
-                    title="Total Pencairan (Payout)" 
+                    title="Penarikan Saldo" 
                     value={`Rp ${cards.pengeluaran.toLocaleString('id-ID')}`} 
-                    subValue="Telah Dibayar via E-Money" 
+                    subValue="Payout Berhasil" 
                     icon={TrendingDown} 
                     trend="Sukses" 
                     trendType="up" 
                 />
                 <FinCard 
-                    title="Anggaran E-Money" 
+                    title="Kas Tunai Bank" 
                     value={`Rp ${cards.saldo_anggaran.toLocaleString('id-ID')}`} 
-                    subValue="Sisa Plafon Anggaran" 
+                    subValue="Sisa Saldo Kas Riil" 
                     icon={BarChart3} 
                     trend="Stabil" 
                     trendType="up" 
@@ -207,7 +207,7 @@ const FinancePage: React.FC = () => {
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 <div className="xl:col-span-2 bg-white rounded border border-gray-200 overflow-hidden shadow-sm">
                     <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
-                        <h3 className="text-[12px] font-black text-gray-400 uppercase tracking-widest">Pendapatan vs Pengeluaran (4 Minggu)</h3>
+                        <h3 className="text-[12px] font-black text-gray-400 uppercase tracking-widest">Tren Tabungan vs Penarikan</h3>
                     </div>
                     <div className="p-6 h-[350px]">
                         <ResponsiveContainer width="100%" height="100%">
@@ -219,8 +219,8 @@ const FinancePage: React.FC = () => {
                                     formatter={(value: any) => [`Rp ${value?.toLocaleString('id-ID')}`, '']}
                                     contentStyle={{ borderRadius: '4px', border: '1px solid #eee', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 'bold' }} 
                                 />
-                                <Bar dataKey="pendapatan" fill="#007bff" radius={[2, 2, 0, 0]} name="Pendapatan (Rp)" />
-                                <Bar dataKey="pengeluaran" fill="#dc3545" radius={[2, 2, 0, 0]} name="Pengeluaran (Rp)" />
+                                <Bar dataKey="pendapatan" fill="#007bff" radius={[2, 2, 0, 0]} name="Tabungan Masuk (Rp)" />
+                                <Bar dataKey="pengeluaran" fill="#dc3545" radius={[2, 2, 0, 0]} name="Penarikan Saldo (Rp)" />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>

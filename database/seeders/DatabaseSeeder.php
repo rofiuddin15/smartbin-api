@@ -28,7 +28,8 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'phone_number' => '081234567890',
             'pin' => Hash::make('1234'),
-            'total_points' => 500,
+            'total_points' => 0,
+            'status' => 'pending',
         ]);
         $testUser->assignRole('user');
 
@@ -38,7 +39,8 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'phone_number' => '081234567891',
             'pin' => Hash::make('5678'),
-            'total_points' => 1200,
+            'total_points' => 0,
+            'status' => 'pending',
         ]);
         $johnUser->assignRole('user');
 
@@ -50,8 +52,20 @@ class DatabaseSeeder extends Seeder
             'phone_number' => '081234567892',
             'pin' => Hash::make('0000'),
             'total_points' => 0,
+            'status' => 'active',
         ]);
         $adminUser->assignRole('admin');
+
+        $budiUser = User::create([
+            'name' => 'Budi Santoso',
+            'email' => 'budi@example.com',
+            'password' => Hash::make('password'),
+            'phone_number' => '081234567893',
+            'pin' => Hash::make('1122'),
+            'total_points' => 2500,
+            'status' => 'active',
+        ]);
+        $budiUser->assignRole('user');
 
         // Call SmartBin seeder
         $this->call([

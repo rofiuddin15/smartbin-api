@@ -12,7 +12,7 @@ class RedemptionSeeder extends Seeder
 {
     public function run(): void
     {
-        $users = User::where('status', 'active')->limit(5)->get();
+        $users = User::role('user')->where('status', 'active')->limit(5)->get();
 
         if ($users->isEmpty()) {
             return;

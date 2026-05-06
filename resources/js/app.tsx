@@ -12,6 +12,8 @@ import PointRedemptionPage from './pages/PointRedemptionPage';
 import StaffManagementPage from './pages/StaffManagementPage';
 import RoleManagementPage from './pages/RoleManagementPage';
 import FinancePage from './pages/FinancePage';
+import FinanceLedgerPage from './pages/FinanceLedgerPage';
+import WasteDetailPage from './pages/WasteDetailPage';
 
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -33,6 +35,9 @@ const App: React.FC = () => {
                             <Route path="staff" element={<StaffManagementPage />} />
                             <Route path="roles" element={<RoleManagementPage />} />
                             <Route path="finance" element={<FinancePage />} />
+                            <Route path="finance/income" element={<FinanceLedgerPage />} />
+                            <Route path="finance/expense" element={<FinanceLedgerPage />} />
+                            <Route path="waste" element={<WasteDetailPage />} />
                         </Route>
                     </Route>
 
