@@ -26,7 +26,10 @@ const LoginPage: React.FC = () => {
 
     // Redirect if already logged in
     React.useEffect(() => {
-        if (localStorage.getItem('token')) {
+        const token = localStorage.getItem('token');
+        const isAuthenticated = !!token && token !== 'null' && token !== 'undefined' && token !== '';
+        
+        if (isAuthenticated) {
             navigate('/', { replace: true });
         }
     }, [navigate]);
