@@ -116,7 +116,7 @@ const RoleManagementPage: React.FC = () => {
                     <div className="w-8 h-8 rounded bg-gray-100 flex items-center justify-center border border-gray-200 shadow-sm">
                         <Shield size={16} className="text-gray-400" />
                     </div>
-                    <span className="font-black text-gray-800 text-[11px] uppercase tracking-tight">{info.getValue()}</span>
+                    <span className="font-black text-gray-800 text-[13px] uppercase tracking-tight">{info.getValue()}</span>
                 </div>
             ),
         }),
@@ -125,14 +125,14 @@ const RoleManagementPage: React.FC = () => {
             cell: info => (
                 <div className="flex items-center gap-1.5">
                     <Users size={12} className="text-gray-400" />
-                    <span className="text-[10px] font-black text-gray-600 uppercase tracking-tighter">{info.getValue()} Staff</span>
+                    <span className="text-[12px] font-black text-gray-600 uppercase tracking-tighter">{info.getValue()} Staff</span>
                 </div>
             ),
         }),
         columnHelper.accessor('permissions', {
             header: 'Jumlah Wewenang',
             cell: info => (
-                <span className="text-[10px] font-black text-admin-primary bg-admin-primary/5 px-2 py-0.5 rounded border border-admin-primary/10 uppercase tracking-widest">
+                <span className="text-[12px] font-black text-admin-primary bg-admin-primary/5 px-2 py-0.5 rounded border border-admin-primary/10 uppercase tracking-widest">
                     {info.getValue().length} Hak Akses
                 </span>
             ),
@@ -160,10 +160,10 @@ const RoleManagementPage: React.FC = () => {
         <div className="space-y-4">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-black text-gray-800 tracking-tight uppercase">Kontrol Akses (RBAC)</h1>
-                    <p className="text-xs text-gray-500">Definisikan peran sistem dan wewenang spesifik setiap staff</p>
+                    <h1 className="text-2xl font-black text-gray-800 tracking-tight uppercase">Kontrol Akses (RBAC)</h1>
+                    <p className="text-sm text-gray-500">Definisikan peran sistem dan wewenang spesifik setiap staff</p>
                 </div>
-                <button onClick={() => handleOpenModal()} className="flex items-center gap-2 bg-admin-primary text-white px-5 py-2 rounded shadow hover:bg-blue-700 transition-all font-black text-[10px] uppercase tracking-widest">
+                <button onClick={() => handleOpenModal()} className="flex items-center gap-2 bg-admin-primary text-white px-5 py-2 rounded shadow hover:bg-blue-700 transition-all font-black text-[12px] uppercase tracking-widest">
                     <Plus size={16} />
                     Buat Role Baru
                 </button>
@@ -174,7 +174,7 @@ const RoleManagementPage: React.FC = () => {
                     <div className="bg-white border border-gray-200 rounded overflow-hidden shadow-sm">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
-                                <thead className="bg-gray-50 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                                <thead className="bg-gray-50 text-[12px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
                                     {table.getHeaderGroups().map(headerGroup => (
                                         <tr key={headerGroup.id}>
                                             {headerGroup.headers.map(header => (
@@ -189,7 +189,7 @@ const RoleManagementPage: React.FC = () => {
                                     {loading ? (
                                         <tr><td colSpan={columns.length} className="px-6 py-12 text-center text-gray-400 text-[10px] font-black uppercase tracking-widest animate-pulse">Memuat Role...</td></tr>
                                     ) : roles.length === 0 ? (
-                                        <tr><td colSpan={columns.length} className="px-6 py-12 text-center text-gray-300 text-[10px] font-black uppercase tracking-widest">Belum ada role yang didefinisikan</td></tr>
+                                        <tr><td colSpan={columns.length} className="px-6 py-12 text-center text-gray-300 text-[12px] font-black uppercase tracking-widest">Belum ada role yang didefinisikan</td></tr>
                                     ) : (
                                         table.getRowModel().rows.map(row => (
                                             <tr key={row.id} className="hover:bg-gray-50 transition-colors">
@@ -213,18 +213,18 @@ const RoleManagementPage: React.FC = () => {
                             <div className="p-2 bg-white/10 rounded text-admin-primary">
                                 <ShieldCheck size={20} />
                             </div>
-                            <h3 className="font-black text-[11px] tracking-widest uppercase">Keamanan Sistem</h3>
+                            <h3 className="font-black text-[13px] tracking-widest uppercase">Keamanan Sistem</h3>
                         </div>
-                        <p className="text-[10px] text-gray-400 leading-relaxed mb-6 italic font-medium">
+                        <p className="text-[12px] text-gray-400 leading-relaxed mb-6 italic font-medium">
                             Role menentukan aksi apa yang dapat dilakukan staff. Untuk staff dengan banyak Role, wewenang akan digabungkan secara otomatis.
                         </p>
                         <div className="space-y-3">
-                            <div className="flex items-center gap-2 text-[9px] font-black text-admin-warning uppercase tracking-widest">
+                            <div className="flex items-center gap-2 text-[11px] font-black text-admin-warning uppercase tracking-widest">
                                 <Lock size={12} /> Role Sistem Terproteksi:
                             </div>
                             <div className="flex flex-wrap gap-2">
                                 {['admin', 'user', 'operator'].map(r => (
-                                    <span key={r} className="px-2 py-0.5 bg-white/10 rounded border border-white/10 text-[9px] uppercase font-black tracking-widest text-gray-300">{r}</span>
+                                    <span key={r} className="px-2 py-0.5 bg-white/10 rounded border border-white/10 text-[11px] uppercase font-black tracking-widest text-gray-300">{r}</span>
                                 ))}
                             </div>
                         </div>
@@ -239,19 +239,19 @@ const RoleManagementPage: React.FC = () => {
                         <div className="p-6 border-b border-gray-100 flex items-center justify-between shrink-0 bg-white sticky top-0 z-10">
                             <div>
                                 <h3 className="font-black text-gray-800 uppercase tracking-tight text-sm">{editingRole ? 'Perbarui Hak Akses' : 'Buat Role Akses Baru'}</h3>
-                                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Konfigurasi Role-Based Access Control</p>
+                                <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Konfigurasi Role-Based Access Control</p>
                             </div>
                             <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-2"><X size={20} /></button>
                         </div>
                         
                         <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-gray-50/30">
                             <div className="space-y-2">
-                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Nama Tampilan Role</label>
+                                <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Nama Tampilan Role</label>
                                 <input 
                                     type="text" 
                                     value={formData.name} 
                                     onChange={e => setFormData({...formData, name: e.target.value})} 
-                                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded text-xs outline-none focus:border-admin-primary font-black uppercase tracking-widest shadow-sm" 
+                                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded text-sm outline-none focus:border-admin-primary font-black uppercase tracking-widest shadow-sm" 
                                     placeholder="Contoh: SUPERVISOR_OPERASI"
                                     required 
                                     disabled={!!(editingRole && ['admin', 'user', 'operator'].includes(editingRole.name))}
@@ -260,8 +260,8 @@ const RoleManagementPage: React.FC = () => {
 
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Tentukan Wewenang</label>
-                                    <span className="text-[9px] text-admin-primary font-black uppercase tracking-widest">{formData.permissions.length} Dipilih</span>
+                                    <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Tentukan Wewenang</label>
+                                    <span className="text-[11px] text-admin-primary font-black uppercase tracking-widest">{formData.permissions.length} Dipilih</span>
                                 </div>
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                                     {permissions.map(perm => (
@@ -284,7 +284,7 @@ const RoleManagementPage: React.FC = () => {
                                             )}>
                                                 {formData.permissions.includes(perm.name) && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                                             </div>
-                                            <span className="text-[10px] font-black uppercase tracking-tighter truncate">{perm.name.replace(/_/g, ' ')}</span>
+                                            <span className="text-[12px] font-black uppercase tracking-tighter truncate">{perm.name.replace(/_/g, ' ')}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -292,8 +292,8 @@ const RoleManagementPage: React.FC = () => {
                         </div>
 
                         <div className="p-6 border-t border-gray-100 bg-white flex gap-3 shrink-0 sticky bottom-0">
-                            <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 text-[10px] font-black text-gray-400 hover:bg-gray-50 rounded transition-colors uppercase tracking-widest border border-gray-100">Batal</button>
-                            <button onClick={handleSubmit} className="flex-[2] py-3 bg-admin-primary text-white text-[10px] font-black uppercase tracking-widest rounded shadow-lg shadow-admin-primary/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+                            <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 text-[12px] font-black text-gray-400 hover:bg-gray-50 rounded transition-colors uppercase tracking-widest border border-gray-100">Batal</button>
+                            <button onClick={handleSubmit} className="flex-[2] py-3 bg-admin-primary text-white text-[12px] font-black uppercase tracking-widest rounded shadow-lg shadow-admin-primary/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
                                 <Save size={16} />
                                 {editingRole ? 'Simpan Konfigurasi' : 'Inisialisasi Role Akses'}
                             </button>

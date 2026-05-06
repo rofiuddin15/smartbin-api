@@ -268,7 +268,7 @@ const SmartBinsPage: React.FC = () => {
             maintenance: 'Perbaikan',
         };
         return (
-            <span className={cn("px-2.5 py-1 rounded-full text-[10px] font-black border uppercase tracking-widest", styles[status as keyof typeof styles])}>
+            <span className={cn("px-2.5 py-1 rounded-full text-[11px] font-black border uppercase tracking-widest", styles[status as keyof typeof styles])}>
                 {labels[status as keyof typeof labels]}
             </span>
         );
@@ -278,8 +278,8 @@ const SmartBinsPage: React.FC = () => {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-black text-gray-800 uppercase tracking-tight">Lokasi SmartBin IoT</h1>
-                    <p className="text-xs text-gray-500">Monitor dan kelola perangkat penampung sampah di seluruh kota</p>
+                    <h1 className="text-2xl font-black text-gray-800 uppercase tracking-tight">Lokasi SmartBin IoT</h1>
+                    <p className="text-sm text-gray-500">Monitor dan kelola perangkat penampung sampah di seluruh kota</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="bg-white border border-gray-200 p-1 rounded-md flex shadow-sm">
@@ -291,7 +291,7 @@ const SmartBinsPage: React.FC = () => {
                             )}
                         >
                             <LayoutGrid size={16} />
-                            <span className="text-[10px] font-black uppercase">Grid</span>
+                            <span className="text-[12px] font-black uppercase">Grid</span>
                         </button>
                         <button 
                             onClick={() => setViewMode('map')}
@@ -301,12 +301,12 @@ const SmartBinsPage: React.FC = () => {
                             )}
                         >
                             <MapIcon size={16} />
-                            <span className="text-[10px] font-black uppercase">Peta</span>
+                            <span className="text-[12px] font-black uppercase">Peta</span>
                         </button>
                     </div>
                     <button 
                         onClick={() => handleOpenModal()}
-                        className="flex items-center gap-2 bg-admin-primary text-white px-5 py-2 rounded shadow hover:bg-blue-700 transition-all text-[11px] font-black uppercase tracking-widest"
+                        className="flex items-center gap-2 bg-admin-primary text-white px-5 py-2 rounded shadow hover:bg-blue-700 transition-all text-[12px] font-black uppercase tracking-widest"
                     >
                         <Plus size={18} />
                         Tambah Perangkat
@@ -317,13 +317,13 @@ const SmartBinsPage: React.FC = () => {
             {loading && bins.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-3">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-admin-primary"></div>
-                    <span className="text-[10px] font-black uppercase tracking-widest">Memuat Perangkat...</span>
+                    <span className="text-[12px] font-black uppercase tracking-widest">Memuat Perangkat...</span>
                 </div>
             ) : error ? (
                 <div className="bg-red-50 border border-red-100 p-8 rounded text-center">
                     <AlertTriangle className="mx-auto text-red-500 mb-2" />
-                    <p className="text-xs font-bold text-red-700 uppercase">{error}</p>
-                    <button onClick={fetchBinsData} className="mt-4 px-6 py-2 bg-red-600 text-white rounded text-[10px] font-black uppercase">Coba Lagi</button>
+                    <p className="text-sm font-bold text-red-700 uppercase">{error}</p>
+                    <button onClick={fetchBinsData} className="mt-4 px-6 py-2 bg-red-600 text-white rounded text-[12px] font-black uppercase">Coba Lagi</button>
                 </div>
             ) : (
                 <>
@@ -332,17 +332,17 @@ const SmartBinsPage: React.FC = () => {
                             {mapError ? (
                                 <div className="flex flex-col items-center justify-center bg-gray-50 p-8 text-center h-[600px]">
                                     <AlertTriangle size={48} className="text-admin-danger mb-4" />
-                                    <h3 className="text-sm font-black text-gray-800 uppercase">Eror Peta</h3>
-                                    <p className="text-xs text-gray-500 mt-2 max-w-md">{mapError}</p>
-                                    <button onClick={() => window.location.reload()} className="mt-6 px-6 py-2 bg-admin-primary text-white rounded text-[10px] font-black uppercase tracking-widest shadow-md">Muat Ulang Dashboard</button>
+                                    <h3 className="text-base font-black text-gray-800 uppercase">Eror Peta</h3>
+                                    <p className="text-sm text-gray-500 mt-2 max-w-md">{mapError}</p>
+                                    <button onClick={() => window.location.reload()} className="mt-6 px-6 py-2 bg-admin-primary text-white rounded text-[12px] font-black uppercase tracking-widest shadow-md">Muat Ulang Dashboard</button>
                                 </div>
                             ) : (
                                 <div className="relative h-[600px] w-full">
                                     <div ref={mapContainer} className="w-full h-full" style={{ minHeight: '600px', backgroundColor: '#f3f4f6' }} />
                                     <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
-                                        <button onClick={() => map.current?.resize()} className="bg-white px-4 py-2 rounded shadow-md hover:bg-gray-50 text-gray-700 text-[10px] font-black uppercase tracking-widest border border-gray-200">Perbaiki Tampilan</button>
+                                        <button onClick={() => map.current?.resize()} className="bg-white px-4 py-2 rounded shadow-md hover:bg-gray-50 text-gray-700 text-[12px] font-black uppercase tracking-widest border border-gray-200">Perbaiki Tampilan</button>
                                     </div>
-                                    <div className="absolute bottom-4 left-4 z-20 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded text-[9px] text-gray-500 border border-gray-100 font-bold">
+                                    <div className="absolute bottom-4 left-4 z-20 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded text-[11px] text-gray-500 border border-gray-100 font-bold">
                                         Status Peta: <span className="text-green-600 uppercase">Siap</span>
                                     </div>
                                 </div>
@@ -358,14 +358,14 @@ const SmartBinsPage: React.FC = () => {
                                                 <Trash2 size={24} />
                                             </div>
                                             <div>
-                                                <h3 className="font-black text-gray-800 leading-tight uppercase tracking-tight">{bin.name}</h3>
-                                                <p className="text-[10px] text-gray-500 mt-0.5 font-black uppercase tracking-widest">{bin.bin_code}</p>
+                                                <h3 className="font-black text-gray-800 leading-tight uppercase tracking-tight text-base">{bin.name}</h3>
+                                                <p className="text-[12px] text-gray-500 mt-0.5 font-black uppercase tracking-widest">{bin.bin_code}</p>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="px-5 py-3 bg-gray-50/50 flex items-center justify-between">
                                         {getStatusBadge(bin.status)}
-                                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                                        <div className="flex items-center gap-1.5 text-[12px] font-bold text-gray-500 uppercase tracking-widest">
                                             <Signal size={14} className={bin.status === 'online' ? 'text-green-500' : 'text-gray-400'} />
                                             <span>{bin.status === 'online' ? 'Sinyal Kuat' : 'Terputus'}</span>
                                         </div>
@@ -375,7 +375,7 @@ const SmartBinsPage: React.FC = () => {
                                             <div className="flex justify-between items-center mb-2">
                                                 <div className="flex items-center gap-2">
                                                     <Battery size={16} className={bin.capacity_percentage > 85 ? 'text-admin-danger' : 'text-admin-success'} />
-                                                    <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Kapasitas Sampah</p>
+                                                    <p className="text-[11px] font-black text-gray-500 uppercase tracking-widest">Kapasitas Sampah</p>
                                                 </div>
                                                 <p className={`text-lg font-black ${bin.capacity_percentage > 85 ? 'text-admin-danger' : 'text-gray-800'}`}>{bin.capacity_percentage}%</p>
                                             </div>
@@ -391,15 +391,15 @@ const SmartBinsPage: React.FC = () => {
                                             <div className="flex items-center gap-3">
                                                 <div className="w-8 h-8 rounded bg-gray-100 flex items-center justify-center text-gray-400"><Users size={14} /></div>
                                                 <div>
-                                                    <p className="text-[9px] text-gray-400 font-black uppercase tracking-tighter">Penanggung Jawab</p>
-                                                    <p className="text-xs text-gray-800 font-bold uppercase">{bin.responsible_person || 'Belum Ditunjuk'}</p>
+                                                    <p className="text-[11px] text-gray-400 font-black uppercase tracking-tighter">Penanggung Jawab</p>
+                                                    <p className="text-sm text-gray-800 font-bold uppercase">{bin.responsible_person || 'Belum Ditunjuk'}</p>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="p-3 border-t border-gray-50 bg-gray-50/30 flex gap-2">
-                                        <button onClick={() => handleOpenModal(bin)} className="flex-1 py-2 bg-white rounded border border-gray-200 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 transition-colors">Kelola Perangkat</button>
-                                        <button onClick={() => handleDelete(bin.id)} className="px-4 py-2 rounded text-[10px] font-black uppercase tracking-widest bg-red-50 text-red-600 border border-red-100 hover:bg-red-600 hover:text-white transition-all">Hapus</button>
+                                        <button onClick={() => handleOpenModal(bin)} className="flex-1 py-2 bg-white rounded border border-gray-200 text-[12px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 transition-colors">Kelola Perangkat</button>
+                                        <button onClick={() => handleDelete(bin.id)} className="px-4 py-2 rounded text-[12px] font-black uppercase tracking-widest bg-red-50 text-red-600 border border-red-100 hover:bg-red-600 hover:text-white transition-all">Hapus</button>
                                     </div>
                                 </div>
                             ))}
@@ -414,8 +414,8 @@ const SmartBinsPage: React.FC = () => {
                     <div className="bg-white rounded shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200 overflow-hidden">
                         <div className="px-8 py-5 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
                             <div>
-                                <h2 className="text-lg font-black text-gray-800 uppercase tracking-tight">{editingBin ? 'Pengaturan SmartBin' : 'Registrasi SmartBin Baru'}</h2>
-                                <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest mt-0.5">Manajemen Aset IoT Pamekasan</p>
+                                <h2 className="text-xl font-black text-gray-800 uppercase tracking-tight">{editingBin ? 'Pengaturan SmartBin' : 'Registrasi SmartBin Baru'}</h2>
+                                <p className="text-[11px] text-gray-400 font-black uppercase tracking-widest mt-0.5">Manajemen Aset IoT Pamekasan</p>
                             </div>
                             <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-gray-100 rounded text-gray-400"><X size={20} /></button>
                         </div>
@@ -427,36 +427,36 @@ const SmartBinsPage: React.FC = () => {
                                     <div className="space-y-6">
                                         <div className="space-y-4">
                                             <div className="space-y-1.5">
-                                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Kode Identitas</label>
-                                                <input type="text" value={formData.bin_code} onChange={(e) => setFormData({...formData, bin_code: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-xs font-bold uppercase outline-none focus:border-admin-primary" required />
+                                                <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Kode Identitas</label>
+                                                <input type="text" value={formData.bin_code} onChange={(e) => setFormData({...formData, bin_code: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold uppercase outline-none focus:border-admin-primary" required />
                                             </div>
                                             <div className="space-y-1.5">
-                                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Nama Perangkat</label>
-                                                <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-xs font-bold uppercase outline-none focus:border-admin-primary" required />
+                                                <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Nama Perangkat</label>
+                                                <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold uppercase outline-none focus:border-admin-primary" required />
                                             </div>
                                             <div className="space-y-1.5">
-                                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Penanggung Jawab (PIC)</label>
+                                                <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Penanggung Jawab (PIC)</label>
                                                 <div className="relative">
                                                     <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                                                    <input type="text" value={formData.responsible_person} onChange={(e) => setFormData({...formData, responsible_person: e.target.value})} className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded text-xs font-bold uppercase outline-none focus:border-admin-primary" required />
+                                                    <input type="text" value={formData.responsible_person} onChange={(e) => setFormData({...formData, responsible_person: e.target.value})} className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold uppercase outline-none focus:border-admin-primary" required />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="p-6 bg-admin-primary/5 rounded border border-admin-primary/10 space-y-4">
                                             <div className="flex items-center gap-2 text-admin-primary">
                                                 <ShieldAlert size={18} />
-                                                <h3 className="text-[10px] font-black uppercase tracking-widest">Autentikasi Perangkat IoT</h3>
+                                                <h3 className="text-[12px] font-black uppercase tracking-widest">Autentikasi Perangkat IoT</h3>
                                             </div>
                                             <div className="space-y-4">
                                                 <div className="space-y-1.5">
-                                                    <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Username</label>
-                                                    <input type="text" value={formData.username} onChange={(e) => setFormData({...formData, username: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-xs font-bold outline-none" required />
+                                                    <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest">Username</label>
+                                                    <input type="text" value={formData.username} onChange={(e) => setFormData({...formData, username: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold outline-none" required />
                                                 </div>
                                                 <div className="space-y-1.5">
-                                                    <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Password</label>
+                                                    <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest">Password</label>
                                                     <div className="relative">
                                                         <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                                                        <input type="password" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded text-xs font-bold outline-none" placeholder={editingBin ? "•••••••• (Kosongkan jika tetap)" : "Atur password"} required={!editingBin} />
+                                                        <input type="password" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold outline-none" placeholder={editingBin ? "•••••••• (Kosongkan jika tetap)" : "Atur password"} required={!editingBin} />
                                                     </div>
                                                 </div>
                                             </div>
@@ -466,17 +466,17 @@ const SmartBinsPage: React.FC = () => {
                                     {/* Right Column */}
                                     <div className="space-y-6">
                                         <div className="space-y-1.5">
-                                            <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Detail Lokasi</label>
-                                            <textarea value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-xs font-medium outline-none h-20 resize-none" required />
+                                            <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Detail Lokasi</label>
+                                            <textarea value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-sm font-medium outline-none h-20 resize-none" required />
                                         </div>
                                         <div className="space-y-1.5">
                                             <div className="flex items-center justify-between mb-1">
-                                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Tentukan Lokasi di Peta</label>
-                                                <button type="button" onClick={() => pickerMap.current?.resize()} className="text-[9px] text-admin-primary font-black uppercase hover:underline">Perbaiki Tampilan</button>
+                                                <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Tentukan Lokasi di Peta</label>
+                                                <button type="button" onClick={() => pickerMap.current?.resize()} className="text-[11px] text-admin-primary font-black uppercase hover:underline">Perbaiki Tampilan</button>
                                             </div>
                                             <div className="border border-gray-200 rounded overflow-hidden h-[300px] relative bg-white shadow-inner" style={{ zIndex: 1 }}>
                                                 <div id="map-picker-container" className="absolute inset-0 w-full h-full" style={{ pointerEvents: 'auto' }} />
-                                                <div className="absolute bottom-3 right-3 z-[20] bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-[9px] font-black text-gray-600 shadow-lg border border-gray-100 flex items-center gap-2 pointer-events-none uppercase">
+                                                <div className="absolute bottom-3 right-3 z-[20] bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-[11px] font-black text-gray-600 shadow-lg border border-gray-100 flex items-center gap-2 pointer-events-none uppercase">
                                                     <div className="w-2 h-2 bg-admin-primary rounded-full animate-pulse" />
                                                     Klik atau Geser Marker
                                                 </div>
@@ -484,12 +484,12 @@ const SmartBinsPage: React.FC = () => {
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-1.5">
-                                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Latitude</label>
-                                                <input type="text" value={formData.latitude} onChange={(e) => setFormData({...formData, latitude: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-[10px] font-mono font-bold" />
+                                                <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Latitude</label>
+                                                <input type="text" value={formData.latitude} onChange={(e) => setFormData({...formData, latitude: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-[12px] font-mono font-bold" />
                                             </div>
                                             <div className="space-y-1.5">
-                                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Longitude</label>
-                                                <input type="text" value={formData.longitude} onChange={(e) => setFormData({...formData, longitude: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-[10px] font-mono font-bold" />
+                                                <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Longitude</label>
+                                                <input type="text" value={formData.longitude} onChange={(e) => setFormData({...formData, longitude: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-[12px] font-mono font-bold" />
                                             </div>
                                         </div>
                                     </div>
@@ -498,8 +498,8 @@ const SmartBinsPage: React.FC = () => {
                         </div>
 
                         <div className="px-8 py-5 border-t border-gray-100 bg-white flex items-center justify-end gap-3 sticky bottom-0 z-10">
-                            <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors">Batal</button>
-                            <button type="submit" form="bin-form" className="px-10 py-2.5 bg-admin-primary text-white rounded text-[10px] font-black uppercase tracking-widest shadow-lg shadow-admin-primary/20 hover:bg-blue-600 transition-all flex items-center gap-2">
+                            <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2.5 text-[12px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors">Batal</button>
+                            <button type="submit" form="bin-form" className="px-10 py-2.5 bg-admin-primary text-white rounded text-[12px] font-black uppercase tracking-widest shadow-lg shadow-admin-primary/20 hover:bg-blue-600 transition-all flex items-center gap-2">
                                 <Save size={18} />
                                 {editingBin ? 'Simpan Perubahan' : 'Registrasi Perangkat'}
                             </button>

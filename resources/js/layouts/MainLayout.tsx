@@ -31,7 +31,7 @@ const SidebarItem = ({ to, icon: Icon, label, active }: { to: string, icon: any,
         )}
     >
         <Icon size={18} />
-        <span className="text-sm font-medium">{label}</span>
+        <span className="text-base font-medium">{label}</span>
     </Link>
 );
 
@@ -54,18 +54,18 @@ const MainLayout: React.FC = () => {
                         <Trash2 size={24} className="text-white" />
                     </div>
                     <span className={cn("font-bold text-xl tracking-tight transition-opacity", !isSidebarOpen && "md:opacity-0")}>
-                        SmartBin <span className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-gray-400 font-normal">ADMIN</span>
+                        SmartBin <span className="text-[12px] bg-white/10 px-1.5 py-0.5 rounded text-gray-400 font-normal">ADMIN</span>
                     </span>
                 </div>
 
                 {/* User Section */}
                 <div className="p-4 flex items-center border-b border-gray-700">
-                    <div className="w-10 h-10 rounded bg-gray-600 flex items-center justify-center text-lg font-bold mr-3 border border-gray-500">
+                    <div className="w-10 h-10 rounded bg-gray-600 flex items-center justify-center text-xl font-bold mr-3 border border-gray-500">
                         A
                     </div>
                     <div className={cn("transition-opacity", !isSidebarOpen && "md:opacity-0")}>
-                        <p className="text-sm font-semibold truncate">Super Admin</p>
-                        <p className="text-[10px] text-green-400 font-bold uppercase tracking-widest flex items-center gap-1">
+                        <p className="text-base font-semibold truncate">Super Admin</p>
+                        <p className="text-[12px] text-green-400 font-bold uppercase tracking-widest flex items-center gap-1">
                             <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
                             Online
                         </p>
@@ -74,7 +74,7 @@ const MainLayout: React.FC = () => {
 
                 {/* Navigation */}
                 <div className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
-                    <p className={cn("px-4 py-2 text-[10px] uppercase font-bold text-gray-500 tracking-wider", !isSidebarOpen && "md:hidden")}>
+                    <p className={cn("px-4 py-2 text-[12px] uppercase font-bold text-gray-500 tracking-wider", !isSidebarOpen && "md:hidden")}>
                         Menu Utama
                     </p>
                     <SidebarItem 
@@ -96,7 +96,7 @@ const MainLayout: React.FC = () => {
                         active={location.pathname === "/smart-bins"} 
                     />
                     
-                    <p className={cn("px-4 py-2 mt-4 text-[10px] uppercase font-bold text-gray-500 tracking-wider", !isSidebarOpen && "md:hidden")}>
+                    <p className={cn("px-4 py-2 mt-4 text-[12px] uppercase font-bold text-gray-500 tracking-wider", !isSidebarOpen && "md:hidden")}>
                         Administrasi
                     </p>
                     <SidebarItem 
@@ -138,9 +138,9 @@ const MainLayout: React.FC = () => {
                             <Menu size={20} />
                         </button>
                         <nav className="hidden md:flex items-center gap-4">
-                            <Link to="/" className="text-sm text-gray-600 hover:text-admin-primary font-medium">Beranda</Link>
+                            <Link to="/" className="text-base text-gray-600 hover:text-admin-primary font-medium">Beranda</Link>
                             <span className="text-gray-300">/</span>
-                            <span className="text-sm text-gray-400 capitalize">{location.pathname.substring(1) || 'Dashboard'}</span>
+                            <span className="text-base text-gray-400 capitalize">{location.pathname.substring(1) || 'Dashboard'}</span>
                         </nav>
                     </div>
 
@@ -158,7 +158,7 @@ const MainLayout: React.FC = () => {
                         <div className="h-8 w-px bg-gray-200 mx-1"></div>
                         <button className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded transition-colors text-red-600 group">
                             <LogOut size={18} />
-                            <span className="text-sm font-bold hidden md:block">Keluar</span>
+                            <span className="text-base font-bold hidden md:block">Keluar</span>
                         </button>
                     </div>
                 </header>
@@ -169,7 +169,7 @@ const MainLayout: React.FC = () => {
                 </main>
 
                 {/* Footer */}
-                <footer className="h-12 bg-white border-t border-gray-200 flex items-center justify-between px-6 shrink-0 text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                <footer className="h-12 bg-white border-t border-gray-200 flex items-center justify-between px-6 shrink-0 text-[12px] text-gray-400 font-bold uppercase tracking-widest">
                     <div>
                         <strong>Hak Cipta &copy; {new Date().getFullYear()} <span className="text-admin-primary">SmartBin Pamekasan</span>.</strong>
                     </div>

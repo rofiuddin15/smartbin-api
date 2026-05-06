@@ -22,7 +22,9 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'phone_number' => 'required|string|unique:users',
-            'pin' => 'required|string|min:4|max:6',
+            'pin' => 'required|string|size:6',
+            'ktp_id' => 'required|string|unique:users',
+            'address' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -39,7 +41,10 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'phone_number' => $request->phone_number,
             'pin' => Hash::make($request->pin),
+            'ktp_id' => $request->ktp_id,
+            'address' => $request->address,
             'total_points' => 0,
+            'status' => 'pending', // Wait for admin verification
         ]);
 
         // Assign 'user' role to new registrations

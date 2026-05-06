@@ -25,6 +25,8 @@ class User extends Authenticatable
         'password',
         'phone_number',
         'pin',
+        'ktp_id',
+        'address',
         'total_points',
         'status',
         'rejection_reason',

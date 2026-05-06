@@ -20,9 +20,21 @@
   --color-admin-danger: #dc3545;
 
   --sidebar-width: 250px;
+
+  /* Shift Tailwind Font Scale */
+  --font-size-xs: 0.875rem;     /* 12px -> 14px */
+  --font-size-sm: 1rem;         /* 14px -> 16px */
+  --font-size-base: 1.125rem;   /* 16px -> 18px */
+  --font-size-lg: 1.25rem;      /* 18px -> 20px */
+  --font-size-xl: 1.5rem;       /* 20px -> 24px */
+  --font-size-2xl: 1.875rem;    /* 24px -> 30px */
 }
 
 @layer base {
+  html {
+    font-size: 105%; /* Slight boost to overall scale */
+  }
+  
   html, body, #root {
     @apply h-full;
   }

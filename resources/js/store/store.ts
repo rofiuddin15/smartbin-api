@@ -4,6 +4,7 @@ import usersReducer from './slices/usersSlice';
 import dashboardReducer from './slices/dashboardSlice';
 import staffReducer from './slices/staffSlice';
 import rolesReducer from './slices/rolesSlice';
+import financeReducer from './slices/financeSlice';
 
 export const store = configureStore({
     reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
         dashboard: dashboardReducer,
         staff: staffReducer,
         roles: rolesReducer,
+        finance: financeReducer,
     },
 });
 

@@ -18,18 +18,18 @@ const LoginPage = () => (
         <div className="bg-white p-10 rounded shadow-2xl border border-gray-200 w-full max-w-md space-y-8 animate-in fade-in zoom-in duration-300">
             <div className="text-center">
                 <div className="bg-admin-primary w-16 h-16 rounded mx-auto flex items-center justify-center text-white mb-4 shadow-lg shadow-admin-primary/20">
-                    <span className="text-3xl font-black italic">SB</span>
+                    <span className="text-4xl font-black italic">SB</span>
                 </div>
-                <h1 className="text-2xl font-black text-gray-800 uppercase tracking-tight">SmartBin Admin</h1>
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Sistem Manajemen Sampah Terintegrasi</p>
+                <h1 className="text-3xl font-black text-gray-800 uppercase tracking-tight">SmartBin Admin</h1>
+                <p className="text-[12px] text-gray-400 font-bold uppercase tracking-widest mt-1">Sistem Manajemen Sampah Terintegrasi</p>
             </div>
             
             <div className="p-6 bg-blue-50 border border-blue-100 rounded text-center">
-                <p className="text-xs font-bold text-blue-700 leading-relaxed uppercase tracking-tight">Halaman Login Sedang Dalam Tahap Pengembangan</p>
-                <button onClick={() => window.location.href = '/'} className="mt-4 w-full py-2 bg-admin-primary text-white text-[10px] font-black uppercase tracking-widest rounded shadow-md hover:bg-blue-700 transition-all">Masuk ke Dashboard</button>
+                <p className="text-sm font-bold text-blue-700 leading-relaxed uppercase tracking-tight">Halaman Login Sedang Dalam Tahap Pengembangan</p>
+                <button onClick={() => window.location.href = '/'} className="mt-4 w-full py-2 bg-admin-primary text-white text-[12px] font-black uppercase tracking-widest rounded shadow-md hover:bg-blue-700 transition-all">Masuk ke Dashboard</button>
             </div>
             
-            <div className="text-center text-[9px] text-gray-300 font-bold uppercase tracking-widest">
+            <div className="text-center text-[11px] text-gray-300 font-bold uppercase tracking-widest">
                 &copy; {new Date().getFullYear()} SmartBin Pamekasan
             </div>
         </div>

@@ -35,12 +35,12 @@ const InfoBox = ({ color, icon: Icon, title, value, linkText }: { color: string,
     <div className={`overflow-hidden rounded shadow-sm flex flex-col relative h-full border border-black/5`}>
         <div className={`p-4 flex justify-between items-start ${color} text-white flex-1`}>
             <div>
-                <h3 className="text-2xl font-black mb-1">{value}</h3>
-                <p className="text-[10px] opacity-90 font-bold uppercase tracking-wider">{title}</p>
+                <h3 className="text-3xl font-black mb-1">{value}</h3>
+                <p className="text-[12px] opacity-90 font-bold uppercase tracking-wider">{title}</p>
             </div>
             <Icon size={40} className="text-white/20 absolute right-2 top-4" />
         </div>
-        <a href="#" className="bg-black/10 hover:bg-black/20 text-white text-center py-1.5 text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-1 transition-colors shrink-0">
+        <a href="#" className="bg-black/10 hover:bg-black/20 text-white text-center py-1.5 text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-1 transition-colors shrink-0">
             {linkText} <ArrowRight size={12} />
         </a>
     </div>
@@ -63,16 +63,16 @@ const DashboardPage: React.FC = () => {
             return (
                 <div className="bg-red-50 border border-red-100 p-12 rounded text-center">
                     <Activity className="mx-auto text-red-400 mb-4" size={48} />
-                    <h3 className="text-sm font-black text-red-800 uppercase">Gagal Memuat Data</h3>
-                    <p className="text-xs text-red-600 mt-2">{error}</p>
-                    <button onClick={fetchDashboardData} className="mt-6 px-8 py-2 bg-red-600 text-white rounded text-[10px] font-black uppercase tracking-widest shadow-lg shadow-red-900/20">Coba Lagi</button>
+                    <h3 className="text-base font-black text-red-800 uppercase">Gagal Memuat Data</h3>
+                    <p className="text-sm text-red-600 mt-2">{error}</p>
+                    <button onClick={fetchDashboardData} className="mt-6 px-8 py-2 bg-red-600 text-white rounded text-[12px] font-black uppercase tracking-widest shadow-lg shadow-red-900/20">Coba Lagi</button>
                 </div>
             );
         }
         return (
             <div className="flex flex-col items-center justify-center h-64 text-gray-400 gap-3">
                 <Activity className="animate-spin" size={32} />
-                <span className="text-xs font-bold uppercase tracking-widest">Memuat Data Dashboard...</span>
+                <span className="text-sm font-bold uppercase tracking-widest">Memuat Data Dashboard...</span>
             </div>
         );
     }
@@ -82,10 +82,10 @@ const DashboardPage: React.FC = () => {
             {/* Page Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-xl font-black text-gray-800 uppercase tracking-tight">Ringkasan Dashboard</h1>
-                    <p className="text-xs text-gray-500">Pantau performa ekosistem SmartBin Pamekasan</p>
+                    <h1 className="text-2xl font-black text-gray-800 uppercase tracking-tight">Ringkasan Dashboard</h1>
+                    <p className="text-sm text-gray-500">Pantau performa ekosistem SmartBin Pamekasan</p>
                 </div>
-                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                <div className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">
                     Beranda / <span className="text-admin-primary">Dashboard</span>
                 </div>
             </div>
@@ -127,7 +127,7 @@ const DashboardPage: React.FC = () => {
                 {/* Waste Trends */}
                 <div className="bg-white rounded border border-gray-200 overflow-hidden shadow-sm">
                     <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-                        <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Tren Pengumpulan Sampah</h3>
+                        <h3 className="text-[12px] font-black text-gray-400 uppercase tracking-widest">Tren Pengumpulan Sampah</h3>
                     </div>
                     <div className="p-4 h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
@@ -139,10 +139,10 @@ const DashboardPage: React.FC = () => {
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f1f1" />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 'bold', fill: '#999'}} />
-                                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 'bold', fill: '#999'}} />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 'bold', fill: '#999'}} />
+                                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 'bold', fill: '#999'}} />
                                 <Tooltip 
-                                    contentStyle={{ borderRadius: '4px', border: '1px solid #eee', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', fontSize: '10px', fontWeight: 'bold' }}
+                                    contentStyle={{ borderRadius: '4px', border: '1px solid #eee', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 'bold' }}
                                 />
                                 <Area type="monotone" dataKey="botol" stroke="#007bff" strokeWidth={3} fillOpacity={1} fill="url(#colorOrganic)" />
                             </AreaChart>
@@ -153,15 +153,15 @@ const DashboardPage: React.FC = () => {
                 {/* Regional Bins Activity */}
                 <div className="bg-white rounded border border-gray-200 overflow-hidden shadow-sm">
                     <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-                        <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Partisipasi Daur Ulang</h3>
+                        <h3 className="text-[12px] font-black text-gray-400 uppercase tracking-widest">Partisipasi Daur Ulang</h3>
                     </div>
                     <div className="p-4 h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={stats.chart_data}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f1f1" />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 'bold', fill: '#999'}} />
-                                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 'bold', fill: '#999'}} />
-                                <Tooltip cursor={{fill: '#f8f9fa'}} contentStyle={{borderRadius: '4px', border: '1px solid #eee', fontSize: '10px', fontWeight: 'bold'}} />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 'bold', fill: '#999'}} />
+                                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 'bold', fill: '#999'}} />
+                                <Tooltip cursor={{fill: '#f8f9fa'}} contentStyle={{borderRadius: '4px', border: '1px solid #eee', fontSize: '12px', fontWeight: 'bold'}} />
                                 <Bar dataKey="botol" fill="#17a2b8" radius={[2, 2, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
@@ -172,11 +172,11 @@ const DashboardPage: React.FC = () => {
             {/* Bottom Section - Recent Activity */}
             <div className="bg-white rounded border border-gray-200 overflow-hidden shadow-sm">
                 <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Transaksi Terbaru</h3>
+                    <h3 className="text-[12px] font-black text-gray-400 uppercase tracking-widest">Transaksi Terbaru</h3>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="text-[10px] text-gray-400 font-black uppercase tracking-widest bg-gray-50/50 border-b border-gray-100">
+                        <thead className="text-[12px] text-gray-400 font-black uppercase tracking-widest bg-gray-50/50 border-b border-gray-100">
                             <tr>
                                 <th className="px-6 py-3 font-black">User</th>
                                 <th className="px-6 py-3 font-black">Tipe</th>
@@ -189,36 +189,36 @@ const DashboardPage: React.FC = () => {
                             {stats.recent_transactions.map((t: any) => (
                                 <tr key={t.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-6 py-3 flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded bg-admin-primary/10 text-admin-primary flex items-center justify-center font-black text-[10px]">
+                                        <div className="w-8 h-8 rounded bg-admin-primary/10 text-admin-primary flex items-center justify-center font-black text-[12px]">
                                             {t.user_name.charAt(0)}
                                         </div>
                                         <div>
-                                            <p className="text-xs font-bold text-gray-800">{t.user_name}</p>
-                                            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">USER-{t.user_id.toString().padStart(5, '0')}</p>
+                                            <p className="text-sm font-bold text-gray-800">{t.user_name}</p>
+                                            <p className="text-[11px] text-gray-400 font-bold uppercase tracking-tighter">USER-{t.user_id.toString().padStart(5, '0')}</p>
                                         </div>
                                     </td>
                                     <td className="px-6 py-3">
                                         <span className={cn(
-                                            "px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest border",
+                                            "px-2 py-0.5 rounded text-[11px] font-black uppercase tracking-widest border",
                                             t.type === 'deposit' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-blue-50 text-blue-700 border-blue-100'
                                         )}>
                                             {t.type === 'deposit' ? 'Setor' : 'Tukar'}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-3 text-xs text-gray-600 font-medium">{t.location}</td>
+                                    <td className="px-6 py-3 text-sm text-gray-600 font-medium">{t.location}</td>
                                     <td className={cn(
-                                        "px-6 py-3 text-xs font-black",
+                                        "px-6 py-3 text-sm font-black",
                                         t.type === 'deposit' ? 'text-green-600' : 'text-red-600'
                                     )}>
                                         {t.type === 'deposit' ? '+' : '-'}{t.points.toLocaleString()}
                                     </td>
-                                    <td className="px-6 py-3 text-right text-[10px] text-gray-400 font-bold">{t.date}</td>
+                                    <td className="px-6 py-3 text-right text-[12px] text-gray-400 font-bold">{t.date}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                     {stats.recent_transactions.length === 0 && (
-                        <div className="p-12 text-center text-gray-300 text-[10px] font-black uppercase tracking-widest">Belum ada transaksi terbaru</div>
+                        <div className="p-12 text-center text-gray-300 text-[12px] font-black uppercase tracking-widest">Belum ada transaksi terbaru</div>
                     )}
                 </div>
             </div>

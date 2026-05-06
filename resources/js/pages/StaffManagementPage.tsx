@@ -146,8 +146,8 @@ const StaffManagementPage: React.FC = () => {
                         <UserCog size={16} className="text-gray-400" />
                     </div>
                     <div>
-                        <p className="font-black text-gray-800 text-[11px] uppercase tracking-tight">{info.getValue()}</p>
-                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">ID-{info.row.original.id.toString().padStart(4, '0')}</p>
+                        <p className="font-black text-gray-800 text-[13px] uppercase tracking-tight">{info.getValue()}</p>
+                        <p className="text-[11px] text-gray-400 font-bold uppercase tracking-tighter">ID-{info.row.original.id.toString().padStart(4, '0')}</p>
                     </div>
                 </div>
             ),
@@ -157,22 +157,22 @@ const StaffManagementPage: React.FC = () => {
             cell: info => (
                 <div className="flex flex-wrap gap-1">
                     {info.getValue().length > 0 ? info.getValue().map(role => (
-                        <span key={role} className="px-2 py-0.5 rounded bg-admin-primary/10 text-admin-primary border border-admin-primary/20 text-[9px] font-black uppercase tracking-tighter shadow-sm">
+                        <span key={role} className="px-2 py-0.5 rounded bg-admin-primary/10 text-admin-primary border border-admin-primary/20 text-[11px] font-black uppercase tracking-tighter shadow-sm">
                             {role}
                         </span>
-                    )) : <span className="text-[9px] text-gray-300 font-bold italic">Tanpa Role</span>}
+                    )) : <span className="text-[11px] text-gray-300 font-bold italic">Tanpa Role</span>}
                 </div>
             ),
         }),
         columnHelper.accessor('email', {
             header: 'Alamat Email',
-            cell: info => <span className="text-[11px] text-gray-600 font-bold">{info.getValue()}</span>,
+            cell: info => <span className="text-[13px] text-gray-600 font-bold">{info.getValue()}</span>,
         }),
         columnHelper.accessor('status', {
             header: 'Status',
             cell: info => (
                 <span className={cn(
-                    "px-2 py-0.5 rounded text-[9px] font-black uppercase border tracking-widest",
+                    "px-2 py-0.5 rounded text-[11px] font-black uppercase border tracking-widest",
                     info.getValue() === 'active' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'
                 )}>
                     {info.getValue() === 'active' ? 'Aktif' : 'Nonaktif'}
@@ -205,8 +205,8 @@ const StaffManagementPage: React.FC = () => {
         <div className="space-y-4">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-black text-gray-800 tracking-tight uppercase">Manajemen Staff</h1>
-                    <p className="text-xs text-gray-500">Kelola peran tim internal dan akses sistem administrasi</p>
+                    <h1 className="text-2xl font-black text-gray-800 tracking-tight uppercase">Manajemen Staff</h1>
+                    <p className="text-sm text-gray-500">Kelola peran tim internal dan akses sistem administrasi</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="relative">
@@ -214,12 +214,12 @@ const StaffManagementPage: React.FC = () => {
                         <input 
                             type="text" 
                             placeholder="Cari staff..." 
-                            className="pl-9 pr-4 py-1.5 text-xs border border-gray-200 rounded outline-none focus:border-admin-primary w-48 bg-white shadow-sm"
+                            className="pl-9 pr-4 py-1.5 text-sm border border-gray-200 rounded outline-none focus:border-admin-primary w-48 bg-white shadow-sm"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
-                    <button onClick={() => handleOpenModal()} className="flex items-center gap-2 bg-admin-primary text-white px-5 py-2 rounded shadow hover:bg-blue-700 transition-all font-black text-[10px] uppercase tracking-widest">
+                    <button onClick={() => handleOpenModal()} className="flex items-center gap-2 bg-admin-primary text-white px-5 py-2 rounded shadow hover:bg-blue-700 transition-all font-black text-[12px] uppercase tracking-widest">
                         <UserPlus size={16} />
                         Tambah Staff
                     </button>
@@ -229,7 +229,7 @@ const StaffManagementPage: React.FC = () => {
             <div className="bg-white border border-gray-200 rounded overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                        <thead className="bg-gray-50 text-[12px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
                             {table.getHeaderGroups().map(headerGroup => (
                                 <tr key={headerGroup.id}>
                                     {headerGroup.headers.map(header => (
@@ -245,9 +245,9 @@ const StaffManagementPage: React.FC = () => {
                         </thead>
                         <tbody className="divide-y divide-gray-50">
                             {loading ? (
-                                <tr><td colSpan={columns.length} className="px-6 py-12 text-center text-gray-400 text-[10px] font-black uppercase tracking-widest animate-pulse">Memuat Staff...</td></tr>
+                                <tr><td colSpan={columns.length} className="px-6 py-12 text-center text-gray-400 text-[12px] font-black uppercase tracking-widest animate-pulse">Memuat Staff...</td></tr>
                             ) : staffList.length === 0 ? (
-                                <tr><td colSpan={columns.length} className="px-6 py-12 text-center text-gray-300 text-[10px] font-black uppercase tracking-widest">Tidak ada staff ditemukan</td></tr>
+                                <tr><td colSpan={columns.length} className="px-6 py-12 text-center text-gray-300 text-[12px] font-black uppercase tracking-widest">Tidak ada staff ditemukan</td></tr>
                             ) : (
                                 table.getRowModel().rows.map(row => (
                                     <tr key={row.id} className="hover:bg-gray-50 transition-colors">
@@ -270,32 +270,32 @@ const StaffManagementPage: React.FC = () => {
                     <div className="bg-white shadow-2xl w-full max-w-md overflow-hidden rounded animate-in zoom-in-95 duration-200">
                         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
                             <div>
-                                <h3 className="font-black text-gray-800 uppercase tracking-tight text-sm">{editingStaff ? 'Edit Data Staff' : 'Tambah Staff Baru'}</h3>
-                                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Konfigurasi Akses Sistem</p>
+                                <h3 className="font-black text-gray-800 uppercase tracking-tight text-base">{editingStaff ? 'Edit Data Staff' : 'Tambah Staff Baru'}</h3>
+                                <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Konfigurasi Akses Sistem</p>
                             </div>
                             <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-2"><X size={20} /></button>
                         </div>
                         <form onSubmit={handleSubmit} className="p-8 space-y-6 bg-gray-50/30">
                             <div className="space-y-4">
                                 <div className="space-y-1">
-                                    <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Nama Lengkap</label>
-                                    <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-xs font-bold uppercase outline-none focus:border-admin-primary shadow-sm" required />
+                                    <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Nama Lengkap</label>
+                                    <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold uppercase outline-none focus:border-admin-primary shadow-sm" required />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Alamat Email</label>
-                                    <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-xs font-bold outline-none focus:border-admin-primary shadow-sm" required />
+                                    <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Alamat Email</label>
+                                    <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold outline-none focus:border-admin-primary shadow-sm" required />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Kata Sandi {editingStaff && '(Kosongkan jika tetap)'}</label>
+                                    <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Kata Sandi {editingStaff && '(Kosongkan jika tetap)'}</label>
                                     <div className="relative">
                                         <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                                        <input type="password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full pl-10 pr-3 py-2.5 bg-white border border-gray-200 rounded text-xs font-bold outline-none focus:border-admin-primary shadow-sm" required={!editingStaff} />
+                                        <input type="password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full pl-10 pr-3 py-2.5 bg-white border border-gray-200 rounded text-sm font-bold outline-none focus:border-admin-primary shadow-sm" required={!editingStaff} />
                                     </div>
                                 </div>
                             </div>
 
                             <div className="space-y-3">
-                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Pilih Role (Multi-Role)</label>
+                                <label className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Pilih Role (Multi-Role)</label>
                                 <div className="grid grid-cols-2 gap-2">
                                     {roles.map(role => (
                                         <button
@@ -312,15 +312,15 @@ const StaffManagementPage: React.FC = () => {
                                             <div className={cn("w-3.5 h-3.5 rounded-sm border flex items-center justify-center", formData.roles.includes(role.name) ? "bg-admin-primary border-admin-primary text-white" : "bg-gray-100 border-gray-200")}>
                                                 {formData.roles.includes(role.name) && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                                             </div>
-                                            <span className="text-[10px] font-black uppercase tracking-tight truncate">{role.name}</span>
+                                            <span className="text-[12px] font-black uppercase tracking-tight truncate">{role.name}</span>
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
                             <div className="flex gap-3 pt-4 border-t border-gray-100">
-                                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 text-[10px] font-black text-gray-400 hover:bg-gray-100 rounded transition-colors uppercase tracking-widest">Batal</button>
-                                <button type="submit" className="flex-[2] py-3 bg-admin-primary text-white text-[10px] font-black uppercase tracking-widest rounded shadow-lg shadow-admin-primary/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+                                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 text-[12px] font-black text-gray-400 hover:bg-gray-100 rounded transition-colors uppercase tracking-widest">Batal</button>
+                                <button type="submit" className="flex-[2] py-3 bg-admin-primary text-white text-[12px] font-black uppercase tracking-widest rounded shadow-lg shadow-admin-primary/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
                                     <Save size={16} />
                                     {editingStaff ? 'Simpan Perubahan' : 'Daftarkan Staff'}
                                 </button>
