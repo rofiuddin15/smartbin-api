@@ -24,6 +24,13 @@ const LoginPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Redirect if already logged in
+    React.useEffect(() => {
+        if (localStorage.getItem('token')) {
+            navigate('/', { replace: true });
+        }
+    }, [navigate]);
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);

@@ -17,4 +17,20 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+// Interceptor to handle unauthorized errors
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            // Using window.location.href to force a full reload and redirect
+            if (window.location.pathname !== '/login') {
+                window.location.href = '/login';
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 export default api;
