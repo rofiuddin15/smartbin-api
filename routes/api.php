@@ -48,7 +48,8 @@ Route::prefix('v1')->group(function () {
         Route::post('/', [SmartBinController::class, 'store']);
 
         // For Smart Bin device authentication
-        Route::post('/validate-pin', [SmartBinController::class, 'validateUserPin']);
+        Route::post('/validate', [SmartBinController::class, 'validateUser']);
+        Route::get('/by-code/{code}', [SmartBinController::class, 'byCode']);
         Route::post('/{id}/heartbeat', [SmartBinController::class, 'heartbeat']);
         Route::put('/{id}/status', [SmartBinController::class, 'updateStatus']);
     });

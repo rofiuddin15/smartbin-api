@@ -50,7 +50,7 @@ class AuthController extends Controller
         // Assign 'user' role to new registrations
         $user->assignRole('user');
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = auth()->guard('api')->login($user);
 
         return response()->json([
             'success' => true,
@@ -64,7 +64,9 @@ class AuthController extends Controller
                     'total_points' => $user->total_points,
                     'roles' => $user->getRoleNames(),
                 ],
-                'token' => $token,
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => auth()->guard('api')->factory()->getTTL() * 60
             ]
         ], 201);
     }
@@ -76,7 +78,8 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+            'login' => 'required_without:email|string',
+            'email' => 'required_without:login|string',
             'password' => 'required',
         ]);
 
@@ -88,13 +91,27 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $credentials = $request->only('email', 'password');
+        $loginValue = $request->input('login') ?? $request->input('email');
+        $loginField = filter_var($loginValue, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone_number';
+        
+        $credentials = [
+            $loginField => $loginValue,
+            'password' => $request->password,
+        ];
 
         if (!$token = auth()->guard('api')->attempt($credentials)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid credentials'
             ], 401);
+        }
+
+        $user = auth()->guard('api')->user();
+        if ($user->status !== 'active') {
+             return response()->json([
+                'success' => false,
+                'message' => 'Akun Anda sedang dalam proses verifikasi atau dinonaktifkan.'
+            ], 403);
         }
 
         return $this->respondWithToken($token);

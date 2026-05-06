@@ -143,11 +143,11 @@ class RedeemController extends Controller
                 'ewallet_type' => $request->ewallet_type,
                 'ewallet_account' => $request->ewallet_account,
                 'ewallet_amount' => $amount,
-                'status' => 'pending',
+                'status' => 'pending', // Always pending until admin approves
                 'notes' => "Redeem {$points} points to {$request->ewallet_type}",
             ]);
 
-            // Update user points
+            // Update user points (deduct immediately to reserve)
             $pointsBefore = $user->total_points;
             $user->total_points -= $points;
             $user->save();
@@ -162,40 +162,23 @@ class RedeemController extends Controller
                 'description' => "-{$points} Points: Redeem to {$request->ewallet_type} ({$request->ewallet_account})",
             ]);
 
-            // In production: Call payment gateway API here
-            // For now, simulate success
-            $paymentSuccess = $this->processPayment($request->ewallet_type, $request->ewallet_account, $amount);
+            // Dispatch real-time event for the user
+            event(new PointsUpdated($user, -$points, 'redeem', "Redeem request created"));
 
-            if ($paymentSuccess) {
-                $transaction->status = 'completed';
-                $transaction->save();
+            DB::commit();
 
-                // Dispatch real-time event
-                event(new PointsUpdated($user, -$points, 'redeem', "Redeemed to {$request->ewallet_type}"));
-
-                DB::commit();
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Redeem successful. Payment will be processed shortly.',
-                    'data' => [
-                        'transaction' => $transaction,
-                        'user' => [
-                            'id' => $user->id,
-                            'name' => $user->name,
-                            'total_points' => $user->total_points,
-                        ]
+            return response()->json([
+                'success' => true,
+                'message' => 'Permintaan penukaran poin berhasil dikirim. Silakan tunggu verifikasi admin.',
+                'data' => [
+                    'transaction' => $transaction,
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'total_points' => $user->total_points,
                     ]
-                ], 201);
-            } else {
-                // Rollback if payment fails
-                DB::rollBack();
-
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Payment processing failed. Please try again.'
-                ], 500);
-            }
+                ]
+            ], 201);
 
         } catch (\Exception $e) {
             DB::rollBack();

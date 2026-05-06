@@ -29,7 +29,8 @@ class SmartBinController extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('location', 'like', "%{$search}%");
+                  ->orWhere('location', 'like', "%{$search}%")
+                  ->orWhere('bin_code', 'like', "%{$search}%");
             });
         }
 
@@ -200,6 +201,26 @@ class SmartBinController extends Controller
     }
 
     /**
+     * Get smart bin details by code
+     */
+    public function byCode($code)
+    {
+        $bin = SmartBin::where('bin_code', $code)->first();
+
+        if (!$bin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'SmartBin dengan kode tersebut tidak ditemukan'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $bin
+        ], 200);
+    }
+
+    /**
      * Update smart bin status (for IoT device)
      */
     public function updateStatus(Request $request, $id)
@@ -249,12 +270,13 @@ class SmartBinController extends Controller
     }
 
     /**
-     * Validate user PIN at Smart Bin
+     * Validate user by PIN or KTP at Smart Bin
      */
-    public function validateUserPin(Request $request)
+    public function validateUser(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'pin' => 'required|string',
+            'identifier' => 'required|string', // PIN or KTP ID
+            'type' => 'required|in:pin,ktp',
             'smart_bin_id' => 'required|exists:smart_bins,id',
         ]);
 
@@ -266,23 +288,28 @@ class SmartBinController extends Controller
             ], 422);
         }
 
-        // Find user by checking all users' PINs
-        // Note: This is for bin authentication, not optimal for production
-        // Consider using user_id or phone_number along with PIN
-        $users = User::all();
-        $authenticatedUser = null;
-
-        foreach ($users as $user) {
-            if (Hash::check($request->pin, $user->pin)) {
-                $authenticatedUser = $user;
-                break;
+        $user = null;
+        if ($request->type === 'pin') {
+            // Find user by PIN (assuming PIN is unique enough or we have a better way)
+            // Ideally we'd have a user identifier + PIN, but for kiosk convenience:
+            $users = User::where('status', 'active')->get();
+            foreach ($users as $u) {
+                if (Hash::check($request->identifier, $u->pin)) {
+                    $user = $u;
+                    break;
+                }
             }
+        } else {
+            // Find by E-KTP ID
+            $user = User::where('ktp_id', $request->identifier)
+                        ->where('status', 'active')
+                        ->first();
         }
 
-        if (!$authenticatedUser) {
+        if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => 'PIN tidak valid'
+                'message' => 'User tidak ditemukan atau belum terverifikasi'
             ], 401);
         }
 
@@ -290,12 +317,12 @@ class SmartBinController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'PIN berhasil divalidasi',
+            'message' => 'User berhasil divalidasi',
             'data' => [
                 'user' => [
-                    'id' => $authenticatedUser->id,
-                    'name' => $authenticatedUser->name,
-                    'total_points' => $authenticatedUser->total_points,
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'total_points' => $user->total_points,
                 ],
                 'smart_bin' => [
                     'id' => $smartBin->id,
