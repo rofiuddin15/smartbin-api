@@ -43,13 +43,12 @@ Route::prefix('v1')->group(function () {
     // Note: For role-based access, you can protect routes like this:
     // Route::post('/', [SmartBinController::class, 'store'])->middleware('role:admin|operator');
     Route::prefix('smart-bins')->group(function () {
-        Route::get('/', [SmartBinController::class, 'index']);
-        Route::get('/{id}', [SmartBinController::class, 'show']);
-        Route::post('/', [SmartBinController::class, 'store']);
-
-        // For Smart Bin device authentication
-        Route::post('/validate', [SmartBinController::class, 'validateUser']);
         Route::get('/by-code/{code}', [SmartBinController::class, 'byCode']);
+        Route::post('/validate', [SmartBinController::class, 'validateUser']);
+        
+        Route::get('/', [SmartBinController::class, 'index']);
+        Route::post('/', [SmartBinController::class, 'store']);
+        Route::get('/{id}', [SmartBinController::class, 'show']);
         Route::post('/{id}/heartbeat', [SmartBinController::class, 'heartbeat']);
         Route::put('/{id}/status', [SmartBinController::class, 'updateStatus']);
     });
@@ -61,7 +60,6 @@ Route::prefix('v1')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::post('/users', [UserController::class, 'store']);
     Route::put('/users/{id}', [UserController::class, 'update']);
-    Route::apiResource('smart-bins', SmartBinController::class);
 
     // User Management for Admin
     Route::prefix('admin/users')->group(function () {
