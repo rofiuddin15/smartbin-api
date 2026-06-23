@@ -11,10 +11,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import ConfirmationModal from '../components/ConfirmationModal';
 
 // Initialize mapbox token
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
-if (MAPBOX_TOKEN) {
-    mapboxgl.accessToken = MAPBOX_TOKEN;
-}
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
+mapboxgl.accessToken = MAPBOX_TOKEN;
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));

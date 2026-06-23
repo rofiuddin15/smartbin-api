@@ -45,10 +45,10 @@ interface User {
 
 const UserManagementPage: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const { users, loading, stats, error } = useSelector((state: RootState) => state.users);
-
+    const { data, loading, stats, error } = useSelector((state: RootState) => state.users);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState<'pending' | 'active' | 'suspended'>('pending');
+    const users = data[activeTab] || [];
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     const [activeModalTab, setActiveModalTab] = useState<'profile' | 'transactions'>('profile');

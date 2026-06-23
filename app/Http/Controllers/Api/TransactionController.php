@@ -91,6 +91,7 @@ class TransactionController extends Controller
             'user_id' => 'required|exists:users,id',
             'smart_bin_id' => 'required|exists:smart_bins,id',
             'bottles_count' => 'required|integer|min:1',
+            'points' => 'sometimes|integer|min:1',
             'points_per_bottle' => 'sometimes|integer|min:1',
         ]);
 
@@ -108,7 +109,7 @@ class TransactionController extends Controller
             $user = User::findOrFail($request->user_id);
             $smartBin = SmartBin::findOrFail($request->smart_bin_id);
             $pointsPerBottle = $request->input('points_per_bottle', 10); // Default 10 points per bottle
-            $totalPoints = $request->bottles_count * $pointsPerBottle;
+            $totalPoints = $request->input('points', $request->bottles_count * $pointsPerBottle);
 
             // Create transaction
             $transaction = Transaction::create([

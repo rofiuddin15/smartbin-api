@@ -21,7 +21,9 @@ export interface User {
 }
 
 interface UsersState {
-    users: User[];
+    data: {
+        [key: string]: User[];
+    };
     loading: boolean;
     error: string | null;
     lastFetched: {
@@ -35,7 +37,11 @@ interface UsersState {
 }
 
 const initialState: UsersState = {
-    users: [],
+    data: {
+        pending: [],
+        active: [],
+        suspended: [],
+    },
     loading: false,
     error: null,
     lastFetched: {
@@ -56,7 +62,7 @@ export const fetchUsers = createAsyncThunk(
         const state = getState() as { users: UsersState };
         // Simple caching: if same status and fetched recently (< 1 min) and no search term
         if (!search && state.users.lastFetched[status] && Date.now() - (state.users.lastFetched[status] || 0) < 60 * 1000) {
-            return { users: state.users.users, status, fromCache: true };
+            return { users: state.users.data[status] || [], status, fromCache: true };
         }
 
         const response = await api.get('/admin/users', {
@@ -84,9 +90,11 @@ const usersSlice = createSlice({
     initialState,
     reducers: {
         updateUserStatusInStore: (state, action: PayloadAction<{ userId: number; status: 'pending' | 'active' | 'suspended' }>) => {
-            const index = state.users.findIndex(u => u.id === action.payload.userId);
-            if (index !== -1) {
-                state.users[index].status = action.payload.status;
+            // Remove from current lists and invalidate cache
+            for (const key of ['pending', 'active', 'suspended']) {
+                if (state.data[key]) {
+                    state.data[key] = state.data[key].filter(u => u.id !== action.payload.userId);
+                }
             }
             // Invalidate cache for all statuses to be safe
             state.lastFetched.pending = null;
@@ -101,7 +109,7 @@ const usersSlice = createSlice({
             })
             .addCase(fetchUsers.fulfilled, (state, action) => {
                 state.loading = false;
-                state.users = action.payload.users;
+                state.data[action.payload.status] = action.payload.users;
                 if (!action.payload.fromCache) {
                     state.lastFetched[action.payload.status] = Date.now();
                     if (action.payload.stats) {
