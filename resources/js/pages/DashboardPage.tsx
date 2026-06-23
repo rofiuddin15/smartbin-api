@@ -18,7 +18,10 @@ import {
     ResponsiveContainer,
     BarChart,
     Bar,
-    Legend
+    Legend,
+    PieChart,
+    Pie,
+    Cell
 } from 'recharts';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -128,9 +131,9 @@ const DashboardPage: React.FC = () => {
             </div>
 
             {/* Main Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {/* Waste Trends */}
-                <div className="bg-white rounded border border-gray-200 overflow-hidden shadow-sm">
+                <div className="bg-white rounded border border-gray-200 overflow-hidden shadow-sm lg:col-span-1 xl:col-span-1">
                     <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
                         <h3 className="text-[12px] font-black text-gray-400 uppercase tracking-widest">Tren Pengumpulan Sampah</h3>
                     </div>
@@ -156,7 +159,7 @@ const DashboardPage: React.FC = () => {
                 </div>
 
                 {/* Regional Bins Activity */}
-                <div className="bg-white rounded border border-gray-200 overflow-hidden shadow-sm">
+                <div className="bg-white rounded border border-gray-200 overflow-hidden shadow-sm lg:col-span-1 xl:col-span-1">
                     <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
                         <h3 className="text-[12px] font-black text-gray-400 uppercase tracking-widest">Partisipasi Daur Ulang</h3>
                     </div>
@@ -169,6 +172,43 @@ const DashboardPage: React.FC = () => {
                                 <Tooltip cursor={{fill: '#f8f9fa'}} contentStyle={{borderRadius: '4px', border: '1px solid #eee', fontSize: '12px', fontWeight: 'bold'}} />
                                 <Bar dataKey="bottles" fill="#17a2b8" radius={[2, 2, 0, 0]} />
                             </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Most Active Bins (Pie Chart) */}
+                <div className="bg-white rounded border border-gray-200 overflow-hidden shadow-sm lg:col-span-2 xl:col-span-1">
+                    <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+                        <h3 className="text-[12px] font-black text-gray-400 uppercase tracking-widest">Kios Sampah Teraktif</h3>
+                    </div>
+                    <div className="p-4 h-[300px] min-w-0">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={stats.location_stats}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={60}
+                                    outerRadius={100}
+                                    paddingAngle={5}
+                                    dataKey="total_bottles"
+                                    nameKey="location"
+                                >
+                                    {stats.location_stats?.map((entry: any, index: number) => {
+                                        const colors = ['#007bff', '#17a2b8', '#28a745', '#ffc107', '#dc3545', '#6c757d'];
+                                        return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
+                                    })}
+                                </Pie>
+                                <Tooltip 
+                                    contentStyle={{ borderRadius: '4px', border: '1px solid #eee', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 'bold' }}
+                                    formatter={(value: any) => [`${value.toLocaleString()} Botol`, 'Terkumpul']}
+                                />
+                                <Legend 
+                                    verticalAlign="bottom" 
+                                    height={36}
+                                    wrapperStyle={{ fontSize: '11px', fontWeight: 'bold' }}
+                                />
+                            </PieChart>
                         </ResponsiveContainer>
                     </div>
                 </div>

@@ -32,20 +32,24 @@ function cn(...inputs: ClassValue[]) {
 const WasteDetailPage: React.FC = () => {
     const [stats, setStats] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [months, setMonths] = useState(7);
+    const [showFilter, setShowFilter] = useState(false);
+
+    const fetchDetails = async () => {
+        try {
+            setLoading(true);
+            const response = await api.get('/dashboard/stats', { params: { months } });
+            setStats(response.data.data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchDetails = async () => {
-            try {
-                const response = await api.get('/dashboard/stats');
-                setStats(response.data.data);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchDetails();
-    }, []);
+    }, [months]);
 
     if (loading) {
         return (
@@ -69,13 +73,35 @@ const WasteDetailPage: React.FC = () => {
                         <p className="text-sm text-gray-500">Statistik mendalam pengumpulan botol plastik</p>
                     </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 relative">
                     <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded text-[12px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 transition-all">
-                        <Calendar size={14} /> 7 Bulan Terakhir
+                        <Calendar size={14} /> {months} Bulan Terakhir
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-admin-primary text-white rounded text-[12px] font-black uppercase tracking-widest shadow-lg shadow-admin-primary/20 hover:bg-blue-700 transition-all">
+                    <button onClick={() => setShowFilter(!showFilter)} className="flex items-center gap-2 px-4 py-2 bg-admin-primary text-white rounded text-[12px] font-black uppercase tracking-widest shadow-lg shadow-admin-primary/20 hover:bg-blue-700 transition-all">
                         <Filter size={14} /> Filter
                     </button>
+                    
+                    {showFilter && (
+                        <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-xl z-50 overflow-hidden">
+                            <div className="p-2 bg-gray-50 border-b border-gray-100">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Rentang Waktu</span>
+                            </div>
+                            <div className="flex flex-col">
+                                {[3, 7, 12].map(m => (
+                                    <button 
+                                        key={m}
+                                        onClick={() => { setMonths(m); setShowFilter(false); }}
+                                        className={cn(
+                                            "px-4 py-2 text-left text-[12px] font-bold uppercase hover:bg-gray-50 transition-colors",
+                                            months === m ? "text-admin-primary bg-admin-primary/5" : "text-gray-700"
+                                        )}
+                                    >
+                                        {m} Bulan Terakhir
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

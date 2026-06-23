@@ -12,10 +12,12 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $monthsToShow = (int) $request->input('months', 7);
+        
         // Info Box Stats
-        $totalBottles = Transaction::sum('bottles_count');
+        $totalBottles = Transaction::where('created_at', '>=', Carbon::now()->subMonths($monthsToShow)->startOfMonth())->sum('bottles_count');
         $activeBins = SmartBin::whereIn('status', ['active', 'online'])->count();
         
         $participantQuery = User::whereDoesntHave('roles', function($q) {
@@ -25,9 +27,9 @@ class DashboardController extends Controller
         $newUsers = (clone $participantQuery)->where('created_at', '>=', Carbon::now()->subDays(30))->count();
         $totalParticipants = $participantQuery->count();
 
-        // Generate the last 7 months labels
+        // Generate the last N months labels
         $chartData = [];
-        for ($i = 6; $i >= 0; $i--) {
+        for ($i = $monthsToShow - 1; $i >= 0; $i--) {
             $month = Carbon::now()->subMonths($i);
             $monthKey = $month->format('m');
             $yearKey = $month->format('Y');
@@ -45,7 +47,7 @@ class DashboardController extends Controller
             DB::raw("$dateFunc as month_year"),
             DB::raw('SUM(CASE WHEN type = "deposit" THEN bottles_count ELSE 0 END) as bottles')
         )
-        ->where('created_at', '>=', Carbon::now()->subMonths(7)->startOfMonth())
+        ->where('created_at', '>=', Carbon::now()->subMonths($monthsToShow)->startOfMonth())
         ->groupBy('month_year')
         ->get();
 

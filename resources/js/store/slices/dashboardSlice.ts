@@ -10,6 +10,7 @@ interface DashboardStats {
     };
     chart_data: Array<{ name: string; botol: number }>;
     recent_transactions: any[];
+    location_stats?: Array<{ location: string; total_bottles: number }>;
 }
 
 interface DashboardState {

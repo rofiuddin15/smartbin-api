@@ -51,6 +51,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/{id}', [SmartBinController::class, 'show']);
         Route::post('/{id}/heartbeat', [SmartBinController::class, 'heartbeat']);
         Route::put('/{id}/status', [SmartBinController::class, 'updateStatus']);
+        Route::delete('/{id}', [SmartBinController::class, 'destroy']);
     });
 
     // Transaction creation by Smart Bin (no user auth required)
@@ -84,6 +85,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\RedeemManagementController::class, 'index']);
         Route::get('/stats', [\App\Http\Controllers\Api\RedeemManagementController::class, 'stats']);
         Route::put('/{id}/status', [\App\Http\Controllers\Api\RedeemManagementController::class, 'updateStatus']);
+        Route::post('/bulk-status', [\App\Http\Controllers\Api\RedeemManagementController::class, 'bulkUpdateStatus']);
     });
 
     // Role management routes (Moved here for development access)

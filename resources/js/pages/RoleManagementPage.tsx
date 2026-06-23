@@ -15,6 +15,7 @@ import { twMerge } from 'tailwind-merge';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { fetchRoles, fetchPermissions, invalidateRolesCache } from '../store/slices/rolesSlice';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -44,6 +45,22 @@ const RoleManagementPage: React.FC = () => {
         name: '',
         permissions: [] as string[]
     });
+
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        isDanger: boolean;
+        onConfirm: () => void;
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        isDanger: true,
+        onConfirm: () => {}
+    });
+
+    const closeConfirmModal = () => setConfirmModal(prev => ({ ...prev, isOpen: false }));
 
     useEffect(() => {
         dispatch(fetchRoles());
@@ -87,15 +104,23 @@ const RoleManagementPage: React.FC = () => {
     };
 
     const handleDeleteRole = async (id: number) => {
-        if (!confirm('Apakah Anda yakin ingin menghapus Role ini? Hal ini dapat mempengaruhi akses staff.')) return;
-        try {
-            const api = (await import('../utils/api')).default;
-            await api.delete(`/roles/${id}`);
-            fetchRolesData();
-        } catch (error) {
-            console.error('Error deleting role:', error);
-            alert('Tidak dapat menghapus Role sistem yang dilindungi.');
-        }
+        setConfirmModal({
+            isOpen: true,
+            title: 'Hapus Role',
+            message: 'Apakah Anda yakin ingin menghapus Role ini? Hal ini dapat mempengaruhi akses staff.',
+            isDanger: true,
+            onConfirm: async () => {
+                closeConfirmModal();
+                try {
+                    const api = (await import('../utils/api')).default;
+                    await api.delete(`/roles/${id}`);
+                    fetchRolesData();
+                } catch (error) {
+                    console.error('Error deleting role:', error);
+                    alert('Tidak dapat menghapus Role sistem yang dilindungi.');
+                }
+            }
+        });
     };
 
     const togglePermission = (permName: string) => {
@@ -301,6 +326,11 @@ const RoleManagementPage: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            <ConfirmationModal 
+                {...confirmModal}
+                onCancel={closeConfirmModal}
+            />
         </div>
     );
 };

@@ -82,7 +82,7 @@ class RoleController extends Controller
             ], 422);
         }
 
-        $role = Role::create(['name' => $request->name]);
+        $role = Role::create(['name' => $request->name, 'guard_name' => 'api']);
 
         if ($request->has('permissions')) {
             $role->syncPermissions($request->permissions);

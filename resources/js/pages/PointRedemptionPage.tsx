@@ -13,6 +13,7 @@ import {
 import api from '../utils/api';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -45,6 +46,22 @@ const PointRedemptionPage: React.FC = () => {
     const [stats, setStats] = useState<Stats | null>(null);
     const [filter, setFilter] = useState('all');
     const [search, setSearch] = useState('');
+    
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        isDanger: boolean;
+        onConfirm: () => void;
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        isDanger: true,
+        onConfirm: () => {}
+    });
+
+    const closeConfirmModal = () => setConfirmModal(prev => ({ ...prev, isOpen: false }));
     
     const fetchPayouts = async () => {
         try {
@@ -87,18 +104,61 @@ const PointRedemptionPage: React.FC = () => {
     };
 
     const handleUpdateStatus = async (id: number, status: 'completed' | 'failed') => {
-        if (!confirm(`Apakah Anda yakin ingin ${status === 'completed' ? 'menyetujui' : 'menolak'} permintaan ini?`)) return;
-
-        try {
-            const response = await api.put(`/admin/redeem/${id}/status`, { status });
-            if (response.data.success) {
-                fetchPayouts();
-                fetchStats();
+        setConfirmModal({
+            isOpen: true,
+            title: status === 'completed' ? 'Setujui Pencairan' : 'Tolak Pencairan',
+            message: `Apakah Anda yakin ingin ${status === 'completed' ? 'menyetujui' : 'menolak'} permintaan ini?`,
+            isDanger: status === 'failed',
+            onConfirm: async () => {
+                closeConfirmModal();
+                try {
+                    const response = await api.put(`/admin/redeem/${id}/status`, { status });
+                    if (response.data.success) {
+                        fetchPayouts();
+                        fetchStats();
+                    }
+                } catch (error) {
+                    console.error('Error updating status:', error);
+                    alert('Gagal memperbarui status permintaan.');
+                }
             }
-        } catch (error) {
-            console.error('Error updating status:', error);
-            alert('Gagal memperbarui status permintaan.');
+        });
+    };
+
+    const handleBulkProcess = async () => {
+        const pendingIds = payouts.filter(p => p.status === 'pending').map(p => p.id);
+        
+        if (pendingIds.length === 0) {
+            alert('Tidak ada permintaan pencairan yang menunggu persetujuan.');
+            return;
         }
+
+        setConfirmModal({
+            isOpen: true,
+            title: 'Proses Massal',
+            message: `Anda akan menyetujui ${pendingIds.length} permintaan secara massal. Lanjutkan?`,
+            isDanger: false,
+            onConfirm: async () => {
+                closeConfirmModal();
+                try {
+                    setLoading(true);
+                    const response = await api.post('/admin/redeem/bulk-status', {
+                        ids: pendingIds,
+                        status: 'completed'
+                    });
+                    
+                    if (response.data.success) {
+                        alert(`Berhasil memproses ${pendingIds.length} permintaan.`);
+                        fetchPayouts();
+                        fetchStats();
+                    }
+                } catch (error) {
+                    console.error('Error bulk updating status:', error);
+                    alert('Gagal memproses permintaan secara massal.');
+                    setLoading(false);
+                }
+            }
+        });
     };
 
     const getStatusInfo = (status: string) => {
@@ -118,12 +178,12 @@ const PointRedemptionPage: React.FC = () => {
                     <p className="text-sm text-gray-500">Tinjau dan proses permintaan penukaran poin member ke E-Money</p>
                 </div>
                 <div className="flex gap-2">
-                    <button className="flex items-center gap-2 bg-white border border-gray-200 px-5 py-2 rounded text-[12px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 shadow-sm transition-all">
+                    <button onClick={() => window.open(api.defaults.baseURL + '/admin/finance/export', '_blank')} className="flex items-center gap-2 bg-white border border-gray-200 px-5 py-2 rounded text-[12px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 shadow-sm transition-all">
                         <Download size={16} />
                         Ekspor Log
                     </button>
-                    <button className="bg-admin-primary text-white px-5 py-2 rounded text-[12px] font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-admin-primary/20 transition-all">
-                        Proses Massal
+                    <button onClick={handleBulkProcess} className="bg-admin-primary text-white px-5 py-2 rounded text-[12px] font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-admin-primary/20 transition-all flex items-center gap-2">
+                        <CheckCircle2 size={16} /> Proses Massal
                     </button>
                 </div>
             </div>
@@ -265,6 +325,11 @@ const PointRedemptionPage: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            <ConfirmationModal 
+                {...confirmModal}
+                onCancel={closeConfirmModal}
+            />
         </div>
     );
 };

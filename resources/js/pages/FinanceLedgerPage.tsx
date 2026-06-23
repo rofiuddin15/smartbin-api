@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import api from '../utils/api';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -125,10 +126,10 @@ const FinanceLedgerPage: React.FC = () => {
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <button className="p-2 text-gray-400 hover:text-admin-primary transition-colors border border-gray-100 rounded">
+                    <button onClick={() => alert('Fitur Filter akan segera hadir (Dalam Pengembangan)')} className="p-2 text-gray-400 hover:text-admin-primary transition-colors border border-gray-100 rounded">
                         <Filter size={18} />
                     </button>
-                    <button className="p-2 text-gray-400 hover:text-admin-primary transition-colors border border-gray-100 rounded">
+                    <button onClick={() => window.open(api.defaults.baseURL + '/admin/finance/export', '_blank')} className="p-2 text-gray-400 hover:text-admin-primary transition-colors border border-gray-100 rounded">
                         <Download size={18} />
                     </button>
                 </div>

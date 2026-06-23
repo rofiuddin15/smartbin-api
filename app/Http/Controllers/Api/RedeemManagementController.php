@@ -146,4 +146,74 @@ class RedeemManagementController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Bulk update redemption status
+     */
+    public function bulkUpdateStatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'ids' => 'required|array',
+            'ids.*' => 'exists:transactions,id',
+            'status' => 'required|in:completed,failed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $transactions = Transaction::whereIn('id', $request->ids)
+                ->where('type', 'redeem')
+                ->where('status', 'pending')
+                ->get();
+
+            $processedCount = 0;
+
+            foreach ($transactions as $transaction) {
+                $transaction->status = $request->status;
+                $transaction->save();
+
+                if ($request->status === 'failed') {
+                    $user = $transaction->user;
+                    $pointsToRefund = abs($transaction->points);
+                    
+                    $pointsBefore = $user->total_points;
+                    $user->total_points += $pointsToRefund;
+                    $user->save();
+
+                    \App\Models\PointTransaction::create([
+                        'user_id' => $user->id,
+                        'transaction_id' => $transaction->id,
+                        'points_before' => $pointsBefore,
+                        'points_change' => $pointsToRefund,
+                        'points_after' => $user->total_points,
+                        'description' => "Refund: Redemption #{$transaction->id} failed/rejected (Bulk).",
+                    ]);
+                }
+                $processedCount++;
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully processed {$processedCount} requests.",
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to bulk update status',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

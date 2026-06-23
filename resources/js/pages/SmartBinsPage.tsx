@@ -8,6 +8,7 @@ import { fetchBins, addBin, updateBin, deleteBin as deleteBinFromStore } from '.
 import api from '../utils/api';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 // Initialize mapbox token
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
@@ -65,6 +66,22 @@ const SmartBinsPage: React.FC = () => {
         latitude: '',
         longitude: ''
     });
+
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        isDanger: boolean;
+        onConfirm: () => void;
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        isDanger: true,
+        onConfirm: () => {}
+    });
+
+    const closeConfirmModal = () => setConfirmModal(prev => ({ ...prev, isOpen: false }));
 
     const pickerMap = useRef<mapboxgl.Map | null>(null);
     const pickerMarker = useRef<mapboxgl.Marker | null>(null);
@@ -269,13 +286,21 @@ const SmartBinsPage: React.FC = () => {
     };
 
     const handleDelete = async (id: number) => {
-        if (!confirm('Apakah Anda yakin ingin menghapus SmartBin ini?')) return;
-        try {
-            await api.delete(`/smart-bins/${id}`);
-            dispatch(deleteBinFromStore(id));
-        } catch (error) {
-            console.error('Error deleting bin:', error);
-        }
+        setConfirmModal({
+            isOpen: true,
+            title: 'Hapus SmartBin',
+            message: 'Apakah Anda yakin ingin menghapus SmartBin ini?',
+            isDanger: true,
+            onConfirm: async () => {
+                closeConfirmModal();
+                try {
+                    await api.delete(`/smart-bins/${id}`);
+                    dispatch(deleteBinFromStore(id));
+                } catch (error) {
+                    console.error('Error deleting bin:', error);
+                }
+            }
+        });
     };
 
     const getStatusBadge = (status: string) => {
@@ -549,6 +574,11 @@ const SmartBinsPage: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            <ConfirmationModal 
+                {...confirmModal}
+                onCancel={closeConfirmModal}
+            />
         </div>
     );
 };

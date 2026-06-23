@@ -18,6 +18,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { fetchStaff, invalidateStaffCache } from '../store/slices/staffSlice';
 import { fetchRoles } from '../store/slices/rolesSlice';
+import ConfirmationModal from '../components/ConfirmationModal';
+import api from '../utils/api';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -64,8 +66,25 @@ const StaffManagementPage: React.FC = () => {
         ktp_id: '',
         address: '',
         pin: '',
+        status: 'active' as 'active' | 'suspended',
         roles: [] as string[]
     });
+
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        isDanger: boolean;
+        onConfirm: () => void;
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        isDanger: true,
+        onConfirm: () => {}
+    });
+
+    const closeConfirmModal = () => setConfirmModal(prev => ({ ...prev, isOpen: false }));
 
     useEffect(() => {
         dispatch(fetchStaff());
@@ -88,7 +107,8 @@ const StaffManagementPage: React.FC = () => {
                 ktp_id: staff.ktp_id || '',
                 address: staff.address || '',
                 pin: '',
-                roles: staff.roles.map((r: any) => typeof r === 'object' ? r.name : r)
+                status: staff.status,
+                roles: staff.roles.map(r => typeof r === 'string' ? r : r.name)
             });
         } else {
             setEditingStaff(null);
@@ -100,7 +120,8 @@ const StaffManagementPage: React.FC = () => {
                 ktp_id: '',
                 address: '',
                 pin: '',
-                roles: [] 
+                status: 'active',
+                roles: []
             });
         }
         setIsModalOpen(true);
@@ -113,9 +134,9 @@ const StaffManagementPage: React.FC = () => {
             const staffData = {
                 name: formData.name,
                 email: formData.email,
-                phone_number: formData.phone_number,
-                ktp_id: formData.ktp_id,
-                address: formData.address,
+                phone_number: formData.phone_number || null,
+                ktp_id: formData.ktp_id || null,
+                address: formData.address || null,
                 ...(formData.password ? { password: formData.password } : {}),
                 ...(formData.pin ? { pin: formData.pin } : {})
             };
@@ -143,20 +164,27 @@ const StaffManagementPage: React.FC = () => {
     };
 
     const handleToggleStatus = async (staff: Staff) => {
-        const newStatus = staff.status === 'active' ? 'suspended' : 'active';
         const confirmMsg = staff.status === 'active' 
-            ? 'Apakah Anda yakin ingin menonaktifkan staff ini?' 
-            : 'Apakah Anda yakin ingin mengaktifkan kembali staff ini?';
+            ? `Apakah Anda yakin ingin menonaktifkan akses untuk ${staff.name}?`
+            : `Apakah Anda yakin ingin memulihkan akses untuk ${staff.name}?`;
             
-        if (!confirm(confirmMsg)) return;
-        
-        try {
-            const api = (await import('../utils/api')).default;
-            await api.put(`/admin/users/${staff.id}/status`, { status: newStatus });
-            fetchStaffData();
-        } catch (error) {
-            console.error('Error updating status:', error);
-        }
+        setConfirmModal({
+            isOpen: true,
+            title: staff.status === 'active' ? 'Nonaktifkan Staff' : 'Pulihkan Staff',
+            message: confirmMsg,
+            isDanger: staff.status === 'active',
+            onConfirm: async () => {
+                closeConfirmModal();
+                try {
+                    const newStatus = staff.status === 'active' ? 'suspended' : 'active';
+                    await api.put(`/admin/users/${staff.id}/status`, { status: newStatus });
+                    dispatch(fetchStaff());
+                } catch (error) {
+                    console.error('Error updating staff status:', error);
+                    alert('Gagal mengubah status staff.');
+                }
+            }
+        });
     };
 
     const toggleRole = (roleName: string) => {
@@ -224,8 +252,16 @@ const StaffManagementPage: React.FC = () => {
         }),
     ], []);
 
+    const filteredStaffList = useMemo(() => {
+        if (!searchTerm) return staffList;
+        return staffList.filter(staff => 
+            staff.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            staff.email.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [staffList, searchTerm]);
+
     const table = useReactTable({
-        data: staffList,
+        data: filteredStaffList as any,
         columns,
         state: { sorting },
         onSortingChange: setSorting,
@@ -278,7 +314,7 @@ const StaffManagementPage: React.FC = () => {
                         <tbody className="divide-y divide-gray-50">
                             {loading ? (
                                 <tr><td colSpan={columns.length} className="px-6 py-12 text-center text-gray-400 text-[12px] font-black uppercase tracking-widest animate-pulse">Memuat Staff...</td></tr>
-                            ) : staffList.length === 0 ? (
+                            ) : filteredStaffList.length === 0 ? (
                                 <tr><td colSpan={columns.length} className="px-6 py-12 text-center text-gray-300 text-[12px] font-black uppercase tracking-widest">Tidak ada staff ditemukan</td></tr>
                             ) : (
                                 table.getRowModel().rows.map(row => (
@@ -386,6 +422,11 @@ const StaffManagementPage: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            <ConfirmationModal 
+                {...confirmModal}
+                onCancel={closeConfirmModal}
+            />
         </div>
     );
 };
