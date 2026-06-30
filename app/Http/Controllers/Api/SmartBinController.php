@@ -275,9 +275,10 @@ class SmartBinController extends Controller
     public function validateUser(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'identifier' => 'required|string', // PIN or KTP ID
+            'identifier' => 'required|string', // KTP ID or Phone Number
             'type' => 'required|in:pin,ktp',
             'smart_bin_id' => 'required|exists:smart_bins,id',
+            'pin' => 'required_if:type,pin|string'
         ]);
 
         if ($validator->fails()) {
@@ -290,14 +291,13 @@ class SmartBinController extends Controller
 
         $user = null;
         if ($request->type === 'pin') {
-            // Find user by PIN (assuming PIN is unique enough or we have a better way)
-            // Ideally we'd have a user identifier + PIN, but for kiosk convenience:
-            $users = User::where('status', 'active')->get();
-            foreach ($users as $u) {
-                if (Hash::check($request->identifier, $u->pin)) {
-                    $user = $u;
-                    break;
-                }
+            // Find user by Phone Number (identifier) and verify PIN
+            $u = User::where('phone_number', $request->identifier)
+                     ->where('status', 'active')
+                     ->first();
+            
+            if ($u && Hash::check($request->pin, $u->pin)) {
+                $user = $u;
             }
         } else {
             // Find by E-KTP ID

@@ -108,24 +108,23 @@ class RedeemManagementController extends Controller
             }
             $transaction->save();
 
-            // If rejected, refund points to user?
-            // Usually, if it fails, we should refund points unless it's a specific fraud case.
-            if ($request->status === 'failed') {
+            // Deduct points when approved
+            if ($request->status === 'completed') {
                 $user = $transaction->user;
-                $pointsToRefund = abs($transaction->points);
+                $pointsToDeduct = abs($transaction->points);
                 
                 $pointsBefore = $user->total_points;
-                $user->total_points += $pointsToRefund;
+                $user->total_points -= $pointsToDeduct;
                 $user->save();
 
-                // Log refund
+                // Log deduction
                 \App\Models\PointTransaction::create([
                     'user_id' => $user->id,
                     'transaction_id' => $transaction->id,
                     'points_before' => $pointsBefore,
-                    'points_change' => $pointsToRefund,
+                    'points_change' => -$pointsToDeduct,
                     'points_after' => $user->total_points,
-                    'description' => "Refund: Redemption #{$transaction->id} failed/rejected.",
+                    'description' => "Redeem: -{$pointsToDeduct} pts to {$transaction->ewallet_type}",
                 ]);
             }
 
@@ -180,21 +179,21 @@ class RedeemManagementController extends Controller
                 $transaction->status = $request->status;
                 $transaction->save();
 
-                if ($request->status === 'failed') {
+                if ($request->status === 'completed') {
                     $user = $transaction->user;
-                    $pointsToRefund = abs($transaction->points);
+                    $pointsToDeduct = abs($transaction->points);
                     
                     $pointsBefore = $user->total_points;
-                    $user->total_points += $pointsToRefund;
+                    $user->total_points -= $pointsToDeduct;
                     $user->save();
 
                     \App\Models\PointTransaction::create([
                         'user_id' => $user->id,
                         'transaction_id' => $transaction->id,
                         'points_before' => $pointsBefore,
-                        'points_change' => $pointsToRefund,
+                        'points_change' => -$pointsToDeduct,
                         'points_after' => $user->total_points,
-                        'description' => "Refund: Redemption #{$transaction->id} failed/rejected (Bulk).",
+                        'description' => "Redeem: -{$pointsToDeduct} pts to {$transaction->ewallet_type} (Bulk)",
                     ]);
                 }
                 $processedCount++;

@@ -122,10 +122,17 @@ class RedeemController extends Controller
         $user = $request->user();
         $points = $request->points;
 
-        if ($points > $user->total_points) {
+        $pendingRedeems = Transaction::where('user_id', $user->id)
+            ->where('type', 'redeem')
+            ->where('status', 'pending')
+            ->sum('points'); // points is negative, so this is a negative value
+
+        $availablePoints = $user->total_points + $pendingRedeems;
+
+        if ($points > $availablePoints) {
             return response()->json([
                 'success' => false,
-                'message' => 'Insufficient points. You have ' . $user->total_points . ' points.'
+                'message' => 'Insufficient points. You have ' . $availablePoints . ' points available.'
             ], 400);
         }
 
@@ -145,21 +152,6 @@ class RedeemController extends Controller
                 'ewallet_amount' => $amount,
                 'status' => 'pending', // Always pending until admin approves
                 'notes' => "Redeem {$points} points to {$request->ewallet_type}",
-            ]);
-
-            // Update user points (deduct immediately to reserve)
-            $pointsBefore = $user->total_points;
-            $user->total_points -= $points;
-            $user->save();
-
-            // Create point transaction log
-            PointTransaction::create([
-                'user_id' => $user->id,
-                'transaction_id' => $transaction->id,
-                'points_before' => $pointsBefore,
-                'points_change' => -$points,
-                'points_after' => $user->total_points,
-                'description' => "-{$points} Points: Redeem to {$request->ewallet_type} ({$request->ewallet_account})",
             ]);
 
             // Dispatch real-time event for the user
